@@ -1,7 +1,5 @@
 package com.alanwalker.state;
 
-import java.awt.Graphics2D;
-
 import com.alanwalker.main.AlanWalker;
 import com.badlogic.gdx.Screen;
 
