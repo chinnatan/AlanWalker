@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 public class AlanWalker extends Game{
 
-	//test
+	
 	private AbstractState screen;
 	private AssetManager assetManager;
 	private float oldX, oldY;
