@@ -1,11 +1,7 @@
 package com.alanwalker.main;
 
-import java.awt.Graphics2D;
-import java.util.ArrayList;
-
 import com.alanwalker.state.AbstractState;
 import com.alanwalker.state.MenuState;
-import com.alanwalker.state.VillageState;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
