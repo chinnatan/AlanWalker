@@ -6,8 +6,11 @@ import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
 import com.alanwalker.util.PlayerControll;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,7 +19,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
-
 public class VillageState extends AbstractState{
 	
 	private Actor player;
@@ -27,7 +29,7 @@ public class VillageState extends AbstractState{
 	private SpriteBatch sb;
 	private AnimationSet animationAlan;
 	
-	protected Rectangle monsterSpawn, actor;
+	protected Rectangle monsterSpawn, actor, nurse;
 	double positionMonsterX;
 	double positionMonsterY;
 	
@@ -61,8 +63,7 @@ public class VillageState extends AbstractState{
 		camera = new OrthographicCamera();
 
 		// Load Player
-//		player = new Actor(aw.getOldX(), aw.getOldY(), animationAlan, map);
-		player = new Actor(10.5f, 0, animationAlan, "VillageState");
+		player = new Actor(aw.getOldX(), aw.getOldY(), animationAlan, "VillageState");
 
 		// Load Player Controll
 		playerControll = new PlayerControll(player);
@@ -91,14 +92,14 @@ public class VillageState extends AbstractState{
 	@Override
 	public void render(float delta) {
 		
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		nurse = new Rectangle(11, 7, 1, 1);
 //		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
 		
 		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
-		
 		playerControll.update(delta);
 		player.update(delta);
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.position.set(player.getWorldX()*Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2, player.getWorldY()*Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
 //		if(camera.position.x > Settings.V_WIDTH) {
 //			camera.position.x = Settings.V_WIDTH;
@@ -110,15 +111,19 @@ public class VillageState extends AbstractState{
 		} else if(camera.position.y < Settings.V_HEIGHT / 4) {
 			camera.position.y = Settings.V_HEIGHT / 4;
 		}
-		camera.update();
 		
+		camera.update();
+		if(actor.overlaps(nurse)) {
+			if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+				System.out.println("Heal !!");
+			}
+		}
 //		if(actor.overlaps(monsterSpawn)) {
 //			screen = new BattleState(aw, "VillageState");
 //			aw.setOldX(player.getX());
 //			aw.setOldY(player.getY());
 //			aw.setScreen(screen);
 //		}
-		
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
@@ -128,13 +133,13 @@ public class VillageState extends AbstractState{
 				Settings.SCALED_TILE_SIZE, 
 				Settings.SCALED_TILE_SIZE*1.5f);
 		sb.end();
+		
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		camera.viewportWidth = width;
 		camera.viewportHeight = height;
-		camera.update();
 	}
 
 	@Override

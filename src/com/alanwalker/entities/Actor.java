@@ -32,9 +32,9 @@ public class Actor {
 	private String attack = Integer.toString((int) (Math.random()*10));
 	private String playerHP = "100";
 	
-	Properties prop = new Properties();
-	OutputStream output = null;
-	InputStream inputSave = null;
+	private Properties prop = new Properties();
+	private OutputStream output = null;
+	private InputStream inputSave = null;
 	
 	public Actor() {
 		try {

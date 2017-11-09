@@ -147,7 +147,7 @@ public class MenuState extends AbstractState{
 
 	@Override
 	public void show() {
-		// New Game and Load File Save
+		// New Game or Load File Save
 		try {
 			inputSave = new FileInputStream("saves/save.properties");
 		} catch (FileNotFoundException e) {
@@ -157,6 +157,8 @@ public class MenuState extends AbstractState{
 				prop.setProperty("hp", playerHP);
 				prop.setProperty("level", level);
 				prop.setProperty("attack", attack);
+				prop.setProperty("startX", "10.5");
+				prop.setProperty("startY", "0");
 				// save properties to project root folder
 				prop.store(output, null);
 			} catch (IOException io) {
