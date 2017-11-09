@@ -6,9 +6,9 @@ public class TexturePackerTool {
 	
 	public static void main(String[] args) {
 		TexturePacker.process(
-				"resource/ui/button/unpacked", 
-				"resource/ui/button/", 
-				"button");
+				"resource/unpacked", 
+				"resource/character/alan", 
+				"alan");
 	}
 
 }

@@ -1,5 +1,13 @@
 package com.alanwalker.state;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.badlogic.gdx.Gdx;
@@ -22,9 +30,18 @@ public class MenuState extends AbstractState{
 	private Skin skin;
 	private Stage stage;
 	
+	// Status Player
+	private String level = "1";
+	private String attack = Integer.toString((int) (Math.random() * 10));
+	private String playerHP = "100";
+	
+	private Properties prop = new Properties();
+	private OutputStream output = null;
+	private InputStream inputSave = null;
+	
 	public MenuState(AlanWalker aw) {
 		super(aw);
-		
+
 		sb = new SpriteBatch();
 		
 		// Load Button TextureAtlas
@@ -130,7 +147,22 @@ public class MenuState extends AbstractState{
 
 	@Override
 	public void show() {
-		
+		// New Game and Load File Save
+		try {
+			inputSave = new FileInputStream("saves/save.properties");
+		} catch (FileNotFoundException e) {
+			try {
+				output = new FileOutputStream("saves/save.properties");
+				// set the properties value
+				prop.setProperty("hp", playerHP);
+				prop.setProperty("level", level);
+				prop.setProperty("attack", attack);
+				// save properties to project root folder
+				prop.store(output, null);
+			} catch (IOException io) {
+				io.printStackTrace();
+			}
+		}
 	}
 
 }

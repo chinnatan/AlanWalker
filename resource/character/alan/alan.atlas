@@ -1,258 +1,258 @@
 
 alan.png
-size: 256,256
+size: 1024,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 alan_stand_east
   rotate: false
-  xy: 86, 3
-  size: 23, 49
-  orig: 23, 49
+  xy: 980, 3
+  size: 20, 47
+  orig: 20, 47
   offset: 0, 0
   index: -1
 alan_stand_north
   rotate: false
-  xy: 130, 207
-  size: 30, 47
-  orig: 30, 47
+  xy: 354, 4
+  size: 30, 46
+  orig: 30, 46
   offset: 0, 0
   index: -1
 alan_stand_south
   rotate: false
-  xy: 34, 153
-  size: 30, 49
-  orig: 30, 49
+  xy: 130, 3
+  size: 30, 47
+  orig: 30, 47
   offset: 0, 0
   index: -1
 alan_stand_west
   rotate: false
-  xy: 111, 5
-  size: 23, 49
-  orig: 23, 49
+  xy: 1002, 3
+  size: 20, 47
+  orig: 20, 47
   offset: 0, 0
   index: -1
 alan_walk_east
   rotate: false
-  xy: 194, 206
-  size: 28, 48
-  orig: 28, 48
+  xy: 574, 4
+  size: 28, 46
+  orig: 28, 46
   offset: 0, 0
   index: 4
 alan_walk_east
+  rotate: false
+  xy: 634, 4
+  size: 25, 46
+  orig: 25, 46
+  offset: 0, 0
+  index: 0
+alan_walk_east
+  rotate: false
+  xy: 688, 3
+  size: 24, 47
+  orig: 24, 47
+  offset: 0, 0
+  index: 3
+alan_walk_east
+  rotate: false
+  xy: 740, 3
+  size: 23, 47
+  orig: 23, 47
+  offset: 0, 0
+  index: 5
+alan_walk_east
+  rotate: false
+  xy: 790, 3
+  size: 22, 47
+  orig: 22, 47
+  offset: 0, 0
+  index: 6
+alan_walk_east
+  rotate: false
+  xy: 838, 4
+  size: 22, 46
+  orig: 22, 46
+  offset: 0, 0
+  index: 1
+alan_walk_east
+  rotate: false
+  xy: 862, 4
+  size: 22, 46
+  orig: 22, 46
+  offset: 0, 0
+  index: 2
+alan_walk_east
+  rotate: false
+  xy: 934, 3
+  size: 21, 47
+  orig: 21, 47
+  offset: 0, 0
+  index: 7
+alan_walk_north
+  rotate: false
+  xy: 162, 3
+  size: 30, 47
+  orig: 30, 47
+  offset: 0, 0
+  index: 1
+alan_walk_north
+  rotate: false
+  xy: 194, 3
+  size: 30, 47
+  orig: 30, 47
+  offset: 0, 0
+  index: 3
+alan_walk_north
+  rotate: false
+  xy: 226, 3
+  size: 30, 47
+  orig: 30, 47
+  offset: 0, 0
+  index: 5
+alan_walk_north
+  rotate: false
+  xy: 258, 3
+  size: 30, 47
+  orig: 30, 47
+  offset: 0, 0
+  index: 7
+alan_walk_north
+  rotate: false
+  xy: 386, 4
+  size: 30, 46
+  orig: 30, 46
+  offset: 0, 0
+  index: 0
+alan_walk_north
+  rotate: false
+  xy: 418, 4
+  size: 30, 46
+  orig: 30, 46
+  offset: 0, 0
+  index: 4
+alan_walk_north
+  rotate: false
+  xy: 450, 3
+  size: 29, 47
+  orig: 29, 47
+  offset: 0, 0
+  index: 2
+alan_walk_north
+  rotate: false
+  xy: 481, 3
+  size: 29, 47
+  orig: 29, 47
+  offset: 0, 0
+  index: 6
+alan_walk_south
+  rotate: false
+  xy: 2, 2
+  size: 30, 48
+  orig: 30, 48
+  offset: 0, 0
+  index: 1
+alan_walk_south
   rotate: false
   xy: 34, 2
-  size: 24, 49
-  orig: 24, 49
-  offset: 0, 0
-  index: 3
-alan_walk_east
-  rotate: false
-  xy: 60, 2
-  size: 24, 49
-  orig: 24, 49
-  offset: 0, 0
-  index: 5
-alan_walk_east
-  rotate: false
-  xy: 128, 56
-  size: 26, 48
-  orig: 26, 48
-  offset: 0, 0
-  index: 0
-alan_walk_east
-  rotate: false
-  xy: 136, 5
-  size: 23, 49
-  orig: 23, 49
-  offset: 0, 0
-  index: 6
-alan_walk_east
-  rotate: false
-  xy: 129, 155
-  size: 23, 49
-  orig: 23, 49
-  offset: 0, 0
-  index: 7
-alan_walk_east
-  rotate: false
-  xy: 182, 156
-  size: 24, 48
-  orig: 24, 48
-  offset: 0, 0
-  index: 1
-alan_walk_east
-  rotate: false
-  xy: 156, 56
-  size: 23, 48
-  orig: 23, 48
-  offset: 0, 0
-  index: 2
-alan_walk_north
-  rotate: false
-  xy: 34, 103
-  size: 30, 48
-  orig: 30, 48
-  offset: 0, 0
-  index: 1
-alan_walk_north
-  rotate: false
-  xy: 66, 155
   size: 30, 48
   orig: 30, 48
   offset: 0, 0
   index: 3
-alan_walk_north
+alan_walk_south
   rotate: false
-  xy: 98, 206
+  xy: 66, 2
   size: 30, 48
   orig: 30, 48
   offset: 0, 0
   index: 5
-alan_walk_north
+alan_walk_south
   rotate: false
-  xy: 34, 53
+  xy: 98, 2
   size: 30, 48
   orig: 30, 48
   offset: 0, 0
   index: 7
-alan_walk_north
+alan_walk_south
   rotate: false
-  xy: 97, 106
+  xy: 290, 3
   size: 30, 47
   orig: 30, 47
   offset: 0, 0
   index: 0
-alan_walk_north
+alan_walk_south
   rotate: false
-  xy: 66, 54
-  size: 29, 48
-  orig: 29, 48
-  offset: 0, 0
-  index: 2
-alan_walk_north
-  rotate: false
-  xy: 162, 207
+  xy: 322, 3
   size: 30, 47
   orig: 30, 47
   offset: 0, 0
   index: 4
-alan_walk_north
-  rotate: false
-  xy: 97, 56
-  size: 29, 48
-  orig: 29, 48
-  offset: 0, 0
-  index: 6
 alan_walk_south
   rotate: false
-  xy: 2, 204
-  size: 30, 50
-  orig: 30, 50
-  offset: 0, 0
-  index: 1
-alan_walk_south
-  rotate: false
-  xy: 2, 152
-  size: 30, 50
-  orig: 30, 50
-  offset: 0, 0
-  index: 3
-alan_walk_south
-  rotate: false
-  xy: 34, 204
-  size: 30, 50
-  orig: 30, 50
-  offset: 0, 0
-  index: 5
-alan_walk_south
-  rotate: false
-  xy: 2, 100
-  size: 30, 50
-  orig: 30, 50
-  offset: 0, 0
-  index: 7
-alan_walk_south
-  rotate: false
-  xy: 66, 205
-  size: 30, 49
-  orig: 30, 49
-  offset: 0, 0
-  index: 0
-alan_walk_south
-  rotate: false
-  xy: 2, 49
-  size: 30, 49
-  orig: 30, 49
-  offset: 0, 0
-  index: 4
-alan_walk_south
-  rotate: false
-  xy: 66, 104
-  size: 29, 49
-  orig: 29, 49
+  xy: 512, 3
+  size: 29, 47
+  orig: 29, 47
   offset: 0, 0
   index: 2
 alan_walk_south
   rotate: false
-  xy: 98, 155
-  size: 29, 49
-  orig: 29, 49
+  xy: 543, 3
+  size: 29, 47
+  orig: 29, 47
   offset: 0, 0
   index: 6
 alan_walk_west
   rotate: false
-  xy: 224, 206
-  size: 28, 48
-  orig: 28, 48
+  xy: 604, 4
+  size: 28, 46
+  orig: 28, 46
   offset: 0, 0
   index: 4
 alan_walk_west
   rotate: false
-  xy: 154, 157
-  size: 26, 48
-  orig: 26, 48
+  xy: 661, 4
+  size: 25, 46
+  orig: 25, 46
   offset: 0, 0
   index: 0
 alan_walk_west
   rotate: false
-  xy: 208, 156
-  size: 24, 48
-  orig: 24, 48
-  offset: 0, 0
-  index: 1
-alan_walk_west
-  rotate: false
-  xy: 154, 106
-  size: 24, 49
-  orig: 24, 49
+  xy: 714, 3
+  size: 24, 47
+  orig: 24, 47
   offset: 0, 0
   index: 3
 alan_walk_west
   rotate: false
-  xy: 180, 106
-  size: 23, 48
-  orig: 23, 48
-  offset: 0, 0
-  index: 2
-alan_walk_west
-  rotate: false
-  xy: 205, 105
-  size: 24, 49
-  orig: 24, 49
+  xy: 765, 3
+  size: 23, 47
+  orig: 23, 47
   offset: 0, 0
   index: 5
 alan_walk_west
   rotate: false
-  xy: 231, 105
-  size: 23, 49
-  orig: 23, 49
+  xy: 814, 3
+  size: 22, 47
+  orig: 22, 47
   offset: 0, 0
   index: 6
 alan_walk_west
   rotate: false
-  xy: 161, 5
-  size: 23, 49
-  orig: 23, 49
+  xy: 886, 4
+  size: 22, 46
+  orig: 22, 46
+  offset: 0, 0
+  index: 1
+alan_walk_west
+  rotate: false
+  xy: 910, 4
+  size: 22, 46
+  orig: 22, 46
+  offset: 0, 0
+  index: 2
+alan_walk_west
+  rotate: false
+  xy: 957, 3
+  size: 21, 47
+  orig: 21, 47
   offset: 0, 0
   index: 7
