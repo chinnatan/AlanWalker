@@ -40,7 +40,7 @@ public class BattleState extends AbstractState {
 	private Label monsterHpLabel, playerHpLabel, playerTurnLabel;
 	private Label.LabelStyle monsterHPStyle, playerHPStyle, playerTurnStyle;
 	private TextButton attackButton;
-	private Texture dialogueBox;
+	private Texture dialogueBox, alanCharacter;
 	private boolean youTurn = true, monTurn;
 	private int flagTurnShowLabel;
 	private float delayTime = 0, delayTimeAttack = 0;
@@ -76,6 +76,9 @@ public class BattleState extends AbstractState {
 		playerAttack = Integer.parseInt(loadPlayer.getAttack()) * playerLevel;
 		positionPlayerX = oldX;
 		positionPlayerY = oldY;
+		
+		// Load Alan Character
+		alanCharacter = new Texture(Gdx.files.internal("resource/character/alan/alan-battle.png"));
 
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
@@ -167,7 +170,7 @@ public class BattleState extends AbstractState {
 
 	@Override
 	public void hide() {
-		dispose();
+//		dispose();
 	}
 
 	@Override
@@ -211,9 +214,15 @@ public class BattleState extends AbstractState {
 			attackButton.setDisabled(true);
 		}
 		
+		// Update All Text on Screen
+		update(delta);
+
+		// Draw All Object on Screen
+		sb.begin();
+		
 		// Check Monster Turn and Show Label
 		if (monTurn == true) {
-			if(delayTimeAttack > 3) {
+			if (delayTimeAttack > 3) {
 				delayTime = 0;
 				if (monsterAttack == 0) {
 					attackButton.setTouchable(Touchable.enabled);
@@ -240,14 +249,23 @@ public class BattleState extends AbstractState {
 					monTurn = false;
 					playerTurnLabel.setText("Your Turn !!");
 				}
+				
+				if(playerHp <= 0) {
+					try {
+						loadPlayer.getProp().setProperty("hp", "50");
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					youTurn = false;
+					monTurn = false;
+					playerTurnLabel.setText("Your Die.");
+					aw.setScreen(new VillageState(aw));
+				}
 			}
 		}
 		
-		// Update All Text on Screen
-		update(delta);
-
-		// Draw All Object on Screen
-		sb.begin();
+		sb.draw(alanCharacter, Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 20 - 100);
 		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 100, Gdx.graphics.getHeight() / 2 + 100);
 		sb.draw(dialogueBox, (Gdx.graphics.getWidth() / 60), 0, Gdx.graphics.getWidth() - 20,
 				Gdx.graphics.getHeight() - 320);

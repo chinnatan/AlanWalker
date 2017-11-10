@@ -29,7 +29,6 @@ public class NurseState extends AbstractState {
 	private TextButton yesButton, noButton;
 	private Texture dialogueBox, nurse;
 
-
 	// Player Status
 	private int playerHp;
 	private int playerLevel;
@@ -110,6 +109,13 @@ public class NurseState extends AbstractState {
 		noButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				try {
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				aw.setScreen(new VillageState(aw));
 			}
 		});

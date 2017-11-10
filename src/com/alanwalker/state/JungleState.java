@@ -25,7 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class VillageState extends AbstractState {
+public class JungleState extends AbstractState {
 
 	private AbstractState screen;
 	private Actor player;
@@ -37,7 +37,7 @@ public class VillageState extends AbstractState {
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn, actor, nurse, toJungle;
+	protected Rectangle monsterSpawn, actor, nurse;
 	private double positionMonsterX;
 	private double positionMonsterY;
 
@@ -55,11 +55,7 @@ public class VillageState extends AbstractState {
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
 
-	public VillageState() {
-
-	}
-
-	public VillageState(AlanWalker aw) {
+	public JungleState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
 
@@ -69,8 +65,8 @@ public class VillageState extends AbstractState {
 		exp = loadPlayer.getExp();
 		attack = loadPlayer.getAttack();
 		playerHP = loadPlayer.getPlayerHP();
-		positionPlayerX = Float.parseFloat(loadPlayer.getStartX());
-		positionPlayerY = Float.parseFloat(loadPlayer.getStartY());
+		positionPlayerX = positionX;
+		positionPlayerY = positionY;
 		
 		// Create a font
 		BitmapFont font = new BitmapFont();
@@ -125,7 +121,7 @@ public class VillageState extends AbstractState {
 				alanAtlas.findRegion("alan_stand_east"), alanAtlas.findRegion("alan_stand_west"));
 
 		// Load Map Village
-		map = new TmxMapLoader().load("resource/maps/village/village.tmx");
+		map = new TmxMapLoader().load("resource/maps/jungle/jungle.tmx");
 
 		// Render Map Village
 		mapRender = new OrthogonalTiledMapRenderer(map);
@@ -134,7 +130,7 @@ public class VillageState extends AbstractState {
 		camera = new OrthographicCamera();
 
 		// Load Player
-		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "VillageState");
+		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "JungleState");
 
 		// Load Player Controll
 		playerControll = new PlayerControll(player);
@@ -167,25 +163,24 @@ public class VillageState extends AbstractState {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		nurse = new Rectangle(12, 7, 1, 1);
-		toJungle = new Rectangle(10.5f, 0, 1, 1);
 //		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
-//		monsterSpawn = new Rectangle(11, 1, 0, 0);
+		monsterSpawn = new Rectangle(11, 1, 0, 0);
 
 		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
 		playerControll.update(delta);
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
-		// if(camera.position.x > Settings.V_WIDTH) {
-		// camera.position.x = Settings.V_WIDTH;
-		// } else if(camera.position.x < Settings.V_WIDTH / 2) {
-		// camera.position.x = Settings.V_WIDTH / 2;
-		// }
-		if (camera.position.y > Settings.V_HEIGHT) {
-			camera.position.y = Settings.V_HEIGHT;
-		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
-			camera.position.y = Settings.V_HEIGHT / 4;
-		}
+		 if(camera.position.x > Settings.V_WIDTH) {
+		 camera.position.x = Settings.V_WIDTH;
+		 } else if(camera.position.x < Settings.V_WIDTH / 2) {
+		 camera.position.x = Settings.V_WIDTH / 2;
+		 }
+//		if (camera.position.y > Settings.V_HEIGHT) {
+//			camera.position.y = Settings.V_HEIGHT;
+//		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
+//			camera.position.y = Settings.V_HEIGHT / 4;
+//		}
 
 		camera.update();
 		
@@ -197,17 +192,11 @@ public class VillageState extends AbstractState {
 			}
 		}
 		
-		// to Jungle map
-		if (actor.overlaps(toJungle)) {
-			screen = new JungleState(aw, 7, 13.5f);
+		// Detection Monster in map
+		if (actor.overlaps(monsterSpawn)) {
+			screen = new BattleState(aw, "VillageState", player.getX(), player.getY());
 			aw.setScreen(screen);
 		}
-		
-		// Detection Monster in map
-//		if (actor.overlaps(monsterSpawn)) {
-//			screen = new BattleState(aw, "VillageState", player.getX(), player.getY());
-//			aw.setScreen(screen);
-//		}
 		
 		mapRender.setView(camera);
 		mapRender.render();
