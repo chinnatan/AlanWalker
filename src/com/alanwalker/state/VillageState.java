@@ -1,24 +1,15 @@
 package com.alanwalker.state;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-
 import com.alanwalker.entities.Actor;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
+import com.alanwalker.util.LoadSave;
 import com.alanwalker.util.PlayerControll;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
@@ -42,23 +33,20 @@ public class VillageState extends AbstractState {
 	private OrthographicCamera camera;
 	private SpriteBatch sb;
 	private AnimationSet animationAlan;
-	private Texture dialogueBox;
 	private Skin skin;
 	private Stage stage;
 	private TextButton attackButton;
 
 	protected Rectangle monsterSpawn, actor, nurse;
-	double positionMonsterX;
-	double positionMonsterY;
+	private double positionMonsterX;
+	private double positionMonsterY;
 
 	// Status Player
 	private String level;
 	private String attack;
 	private String playerHP;
-
-	private Properties prop = new Properties();
-	private OutputStream output = null;
-	private InputStream inputSave = null;
+	private float positionPlayerX, positionPlayerY;
+	private LoadSave loadPlayer;
 
 	public VillageState() {
 
@@ -69,21 +57,15 @@ public class VillageState extends AbstractState {
 		sb = new SpriteBatch();
 
 		// Load data player
-		try {
-			inputSave = new FileInputStream("saves/save.properties");
-			prop.load(inputSave);
-			level = prop.getProperty("level");
-			attack = prop.getProperty("attack");
-			playerHP = prop.getProperty("playerHP");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		loadPlayer = new LoadSave();
+		level = loadPlayer.getLevel();
+		attack = loadPlayer.getAttack();
+		playerHP = loadPlayer.getPlayerHP();
+		positionPlayerX = Float.parseFloat(loadPlayer.getStartX());
+		positionPlayerY = Float.parseFloat(loadPlayer.getStartY());
 
-		positionMonsterX = Math.random() * 3 + 1;
+		positionMonsterX = Math.random() * 10 + 1;
 		positionMonsterY = Math.random() * 3 + 1;
-
-		// Load Dialoguebox UI
-		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
 		
 		// Load Button TextureAtlas
 		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
@@ -131,7 +113,7 @@ public class VillageState extends AbstractState {
 		camera = new OrthographicCamera();
 
 		// Load Player
-		player = new Actor(Integer.parseInt(prop.getProperty("startX")), Integer.parseInt(prop.getProperty("startY")), animationAlan, "VillageState");
+		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "VillageState");
 
 		// Load Player Controll
 		playerControll = new PlayerControll(player);
@@ -156,15 +138,15 @@ public class VillageState extends AbstractState {
 	public void pause() {
 
 	}
-
+	
 	@Override
 	public void render(float delta) {
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		nurse = new Rectangle(12, 7, 1, 1);
-		// monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY,
-		// 0, 0);
+//		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
 
 		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
 		playerControll.update(delta);
@@ -184,6 +166,7 @@ public class VillageState extends AbstractState {
 
 		camera.update();
 		
+		// Press "C" to talk Nurse in nearby
 		if (actor.overlaps(nurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
 				screen = new NurseState(aw, player.getX(), player.getY());
@@ -191,12 +174,12 @@ public class VillageState extends AbstractState {
 			}
 		}
 		
-		// if(actor.overlaps(monsterSpawn)) {
-		// screen = new BattleState(aw, "VillageState");
-		// aw.setOldX(player.getX());
-		// aw.setOldY(player.getY());
-		// aw.setScreen(screen);
-		// }
+		// Detection Monster in map
+//		if (actor.overlaps(monsterSpawn)) {
+//			screen = new BattleState(aw, "VillageState", player.getX(), player.getY());
+//			aw.setScreen(screen);
+//		}
+		
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();

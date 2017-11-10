@@ -1,6 +1,7 @@
 package com.alanwalker.state;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +10,7 @@ import java.util.Properties;
 import com.alanwalker.entities.Actor;
 import com.alanwalker.entities.Monster;
 import com.alanwalker.main.AlanWalker;
+import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -52,34 +54,28 @@ public class BattleState extends AbstractState {
 	private int playerLevel;
 	private int playerExp;
 	private int playerAttack;
+	private float positionPlayerX, positionPlayerY;
+	private LoadSave loadPlayer;
 	
 	// Monster Status
 	private int monsterHp;
 	private int monsterAttack;
 	private int monsterExp;
 
-	public BattleState(AlanWalker aw, String monster) {
+	public BattleState(AlanWalker aw, String monster, float oldX, float oldY) {
 		super(aw);
 		this.monster = new Monster(monster);
 		this.player = new Actor();
 		sb = new SpriteBatch();
-	
-		try {
-
-			input = new FileInputStream("saves/save.properties");
-
-			// load a properties file
-			prop.load(input);
-			playerLevel = Integer.parseInt(prop.getProperty("level"));
-			playerExp = Integer.parseInt(prop.getProperty("exp"));
-			playerAttack = Integer.parseInt(prop.getProperty("attack"));
-
-			// get the property value and print it out
-			System.out.println(prop.getProperty("hp"));
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+		
+		// Load data player
+		loadPlayer = new LoadSave();
+		playerLevel = Integer.parseInt(loadPlayer.getLevel());
+		playerHp = Integer.parseInt(loadPlayer.getPlayerHP());
+		playerExp = Integer.parseInt(loadPlayer.getExp());
+		playerAttack = Integer.parseInt(loadPlayer.getAttack()) * playerLevel;
+		positionPlayerX = oldX;
+		positionPlayerY = oldY;
 
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
@@ -123,9 +119,10 @@ public class BattleState extends AbstractState {
 				if (monsterHp <= 0) {
 					playerExp += monsterExp;
 					try {
-						output = new FileOutputStream("saves/save.properties");
-						prop.setProperty("exp", Integer.toString(playerExp));
-						prop.store(output, null);
+						loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
+						loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+						loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -180,6 +177,9 @@ public class BattleState extends AbstractState {
 	}
 
 	public void update(float delta) {
+		// Update Attack
+		playerAttack = Integer.parseInt(loadPlayer.getAttack());
+		
 		monsterHpLabel.setText("HP : " + monsterHp);
 		playerHpLabel.setText("HP : " + playerHp);
 		monster.update();
@@ -227,13 +227,11 @@ public class BattleState extends AbstractState {
 						}
 					}, 2);
 				} else {
-					playerAttack = (int) (Math.random()*10) * Integer.parseInt(prop.getProperty("level"));
 					playerHp -= monsterAttack;
 					try {
-						output = new FileOutputStream("saves/save.properties");
-						prop.setProperty("hp", Integer.toString(playerHp));
-						prop.setProperty("attack", Integer.toString(playerAttack));
-						prop.store(output, null);
+						loadPlayer.getProp().setProperty("hp", Integer.toString(playerHp));
+						loadPlayer.getProp().setProperty("attack", Integer.toString(playerAttack));
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -272,10 +270,10 @@ public class BattleState extends AbstractState {
 
 	@Override
 	public void show() {
+		// Load data monster
 		monsterHp = monster.getHpMonster();
 		monsterAttack = monster.getMonsterAttack();
 		monsterExp = monster.getMonsterExp();
-		playerHp = Integer.parseInt(prop.getProperty("hp"));
 	}
 
 }

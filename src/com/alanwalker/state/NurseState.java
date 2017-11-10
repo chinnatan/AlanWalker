@@ -1,14 +1,9 @@
 package com.alanwalker.state;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-import com.alanwalker.entities.Actor;
-import com.alanwalker.entities.Monster;
 import com.alanwalker.main.AlanWalker;
+import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,51 +13,43 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
 public class NurseState extends AbstractState {
 
 	private AbstractState screen;
-	private float oldX, oldY;
-	private Monster monster;
-	private Actor player;
 	private SpriteBatch sb;
 	private Skin skin;
 	private Stage stage;
 	private Label nurseLabel;
-	private Label.LabelStyle nurseStyle, playerHPStyle, playerTurnStyle;
+	private Label.LabelStyle nurseStyle;
 	private TextButton yesButton, noButton;
 	private Texture dialogueBox, nurse;
-	private boolean youTurn = true, monTurn;
-	private int flagTurnShowLabel;
-	private float delayTime = 0, delayTimeAttack = 0;
 
-	private Properties prop = new Properties();
-	private InputStream input = null;
-	private OutputStream output = null;
 
 	// Player Status
 	private int playerHp;
 	private int playerLevel;
 	private int playerExp;
 	private int playerAttack;
-
-	// Monster Status
-	private int monsterHp;
-	private int monsterAttack;
-	private int monsterExp;
+	private float positionPlayerX, positionPlayerY;
+	private LoadSave loadPlayer;
 
 	public NurseState(AlanWalker aw, float oldX, float oldY) {
 		super(aw);
-		this.oldX = oldX;
-		this.oldY = oldY;
 		sb = new SpriteBatch();
+		
+		// Load data player
+		loadPlayer = new LoadSave();
+		playerLevel = Integer.parseInt(loadPlayer.getLevel());
+		playerHp = Integer.parseInt(loadPlayer.getPlayerHP());
+		playerExp = Integer.parseInt(loadPlayer.getExp());
+		playerAttack = Integer.parseInt(loadPlayer.getAttack());
+		positionPlayerX = oldX;
+		positionPlayerY = oldY;
 
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
@@ -107,11 +94,10 @@ public class NurseState extends AbstractState {
 			public void clicked(InputEvent event, float x, float y) {
 				playerHp = 100;
 				try {
-					output = new FileOutputStream("saves/save.properties");
-					prop.setProperty("hp", Integer.toString(playerHp));
-					prop.setProperty("startX", Integer.toString((int) oldX));
-					prop.setProperty("startY", Integer.toString((int) oldY));
-					prop.store(output, null);
+					loadPlayer.getProp().setProperty("hp", Integer.toString(playerHp));
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -192,14 +178,7 @@ public class NurseState extends AbstractState {
 
 	@Override
 	public void show() {
-		try {
-			input = new FileInputStream("saves/save.properties");
-			// load a properties file
-			prop.load(input);
-			playerHp = Integer.parseInt(prop.getProperty("hp"));
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+
 	}
 
 }
