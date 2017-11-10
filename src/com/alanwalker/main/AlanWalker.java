@@ -20,7 +20,7 @@ public class AlanWalker extends Game{
 
 	private AbstractState screen;
 	private AssetManager assetManager;
-	private float oldX, oldY;
+	private float oldX = 10, oldY = 0;
 	
 	// Status Player
 	private String level = "1";
