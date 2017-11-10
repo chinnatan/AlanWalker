@@ -82,7 +82,7 @@ public class StoryState extends AbstractState implements InputProcessor {
 			if(next != 6) {
 				next++;
 			} else {
-				screen = new VillageState(aw);
+				screen = new VillageState(aw, 12, 2);
 				aw.setScreen(screen);
 			}
 		}

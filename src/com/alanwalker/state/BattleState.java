@@ -129,7 +129,7 @@ public class BattleState extends AbstractState {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					aw.setScreen(new VillageState(aw));
+					aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
 				}
 				youTurn = false;
 				monTurn = true;
@@ -260,7 +260,7 @@ public class BattleState extends AbstractState {
 					youTurn = false;
 					monTurn = false;
 					playerTurnLabel.setText("Your Die.");
-					aw.setScreen(new VillageState(aw));
+					aw.setScreen(new VillageState(aw, 12, 2));
 				}
 			}
 		}

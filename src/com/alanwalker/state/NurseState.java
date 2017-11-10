@@ -100,7 +100,7 @@ public class NurseState extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				aw.setScreen(new VillageState(aw));
+				aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
 			}
 		});
 		
@@ -116,7 +116,7 @@ public class NurseState extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				aw.setScreen(new VillageState(aw));
+				aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
 			}
 		});
 		

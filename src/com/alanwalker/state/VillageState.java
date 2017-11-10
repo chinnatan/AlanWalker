@@ -59,7 +59,7 @@ public class VillageState extends AbstractState {
 
 	}
 
-	public VillageState(AlanWalker aw) {
+	public VillageState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
 
@@ -69,8 +69,8 @@ public class VillageState extends AbstractState {
 		exp = loadPlayer.getExp();
 		attack = loadPlayer.getAttack();
 		playerHP = loadPlayer.getPlayerHP();
-		positionPlayerX = Float.parseFloat(loadPlayer.getStartX());
-		positionPlayerY = Float.parseFloat(loadPlayer.getStartY());
+		positionPlayerX = positionX;
+		positionPlayerY = positionY;
 		
 		// Create a font
 		BitmapFont font = new BitmapFont();
@@ -199,7 +199,7 @@ public class VillageState extends AbstractState {
 		
 		// to Jungle map
 		if (actor.overlaps(toJungle)) {
-			screen = new JungleState(aw, 7, 13.5f);
+			screen = new JungleState(aw, 6.5f, 12);
 			aw.setScreen(screen);
 		}
 		

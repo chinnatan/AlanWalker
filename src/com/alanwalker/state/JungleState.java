@@ -37,7 +37,7 @@ public class JungleState extends AbstractState {
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn, actor, nurse;
+	protected Rectangle monsterSpawn, actor, nurse, toVillage;
 	private double positionMonsterX;
 	private double positionMonsterY;
 
@@ -163,10 +163,11 @@ public class JungleState extends AbstractState {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		nurse = new Rectangle(12, 7, 1, 1);
+		toVillage = new Rectangle(7, 13.5f, 0.5f, 0.5f);
 //		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
 		monsterSpawn = new Rectangle(11, 1, 0, 0);
 
-		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
+		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
 		playerControll.update(delta);
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
@@ -190,6 +191,12 @@ public class JungleState extends AbstractState {
 				screen = new NurseState(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
+		}
+		
+		// to Village map
+		if (actor.overlaps(toVillage)) {
+			screen = new VillageState(aw, 11, 1.5f);
+			aw.setScreen(screen);
 		}
 		
 		// Detection Monster in map
