@@ -10,6 +10,7 @@ import java.util.Properties;
 import com.alanwalker.entities.Actor;
 import com.alanwalker.entities.Monster;
 import com.alanwalker.main.AlanWalker;
+import com.alanwalker.main.Settings;
 import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -122,6 +123,16 @@ public class BattleState extends AbstractState {
 				monsterHp -= playerAttack;
 				if (monsterHp <= 0) {
 					playerExp += monsterExp;
+					if(monster == "JungleBoss") {
+						try {
+							loadPlayer.getProp().setProperty("Quest1", "end");
+							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 					if(!(loadPlayer.getProp().getProperty("Quest1CountMonster").equals("10"))) {
 						countMonster++;
 					}
@@ -275,7 +286,7 @@ public class BattleState extends AbstractState {
 		}
 		
 		sb.draw(alanCharacter, Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 20 - 100);
-		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 100, Gdx.graphics.getHeight() / 2 + 100);
+		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 100, Gdx.graphics.getHeight() / 2 + 50);
 		sb.draw(dialogueBox, (Gdx.graphics.getWidth() / 60), 0, Gdx.graphics.getWidth() - 20,
 				Gdx.graphics.getHeight() - 320);
 		sb.end();

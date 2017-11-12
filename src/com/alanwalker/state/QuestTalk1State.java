@@ -187,7 +187,7 @@ public class QuestTalk1State extends AbstractState {
 				npcQuestLabel.setColor(Color.WHITE);
 				npcQuestLabel.setFontScale(1f, 1f);
 			}
-		} else {
+		} else if(loadPlayer.getProp().getProperty("Quest1").equals("end")) {
 			npcQuestLabel.setText("คุณผ่านเควสนี้เรียบร้อยแล้ว...กรุณาทำเควสด่านถัดไป");
 			npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
 			npcQuestLabel.setColor(Color.WHITE);

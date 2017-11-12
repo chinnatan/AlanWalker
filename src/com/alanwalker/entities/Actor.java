@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 import com.alanwalker.util.AnimationSet;
+import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -26,34 +27,18 @@ public class Actor {
 	private ACTOR_STATE state;
 	private AnimationSet animationPlayer;
 	private String mapName;
-	
+
 	// Status Player
-	private String level = "1";
-	private String attack = Integer.toString((int) (Math.random()*10));
-	private String playerHP = "100";
+	private String level;
+	private String exp;
+	private String attack;
+	private String playerHP;
+	private int expMax = 10;
+	private int levelMax;
+	private LoadSave loadPlayer;
 	
-	private Properties prop = new Properties();
-	private OutputStream output = null;
-	private InputStream inputSave = null;
-	
-	public Actor() {
-		try {
-			inputSave = new FileInputStream("saves/save.properties");
-		} catch (FileNotFoundException e) {
-			try {
-				output = new FileOutputStream("saves/save.properties");
-				// set the properties value
-				prop.setProperty("hp", playerHP);
-				prop.setProperty("level", level);
-				prop.setProperty("attack", attack);
-				// save properties to project root folder
-				prop.store(output, null);
-			} catch (IOException io) {
-				io.printStackTrace();
-			}
-		}
-	}
-	
+	public Actor() { }
+
 	public Actor(float x, float y, AnimationSet animations, String mapName) {
 		this.x = x;
 		this.y = y;
@@ -63,14 +48,34 @@ public class Actor {
 		this.state = ACTOR_STATE.STANDING;
 		this.facing = DIRECTION.SOUTH;
 		this.mapName = mapName;
+
+		// Load data player
+		loadPlayer = new LoadSave();
+		level = loadPlayer.getLevel();
+		exp = loadPlayer.getExp();
+		attack = loadPlayer.getAttack();
+		playerHP = loadPlayer.getPlayerHP();
+		levelMax = Integer.parseInt(loadPlayer.getLevel());
+		
+		// Up Level Player
+		if (Integer.parseInt(loadPlayer.getExp()) >= expMax * Integer.parseInt(loadPlayer.getLevel())) {
+			levelMax++;
+			try {
+				loadPlayer.getProp().setProperty("exp", "0");
+				loadPlayer.getProp().setProperty("level", String.valueOf(levelMax));
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
 	public enum ACTOR_STATE {
-		WALKING,
-		STANDING,
-		;
+		WALKING, STANDING,;
 	}
-	
+
 	public void update(float delta) {
 		if (state == ACTOR_STATE.WALKING) {
 			animaTimer += delta;
@@ -88,22 +93,22 @@ public class Actor {
 				}
 			}
 		}
-		
+
 		moveRequestThisFrame = false;
 	}
-	
+
 	public boolean move(DIRECTION dir) {
 		// Show X, Y
 		System.out.println("X : " + getX());
 		System.out.println("Y : " + getY());
 
-		if(state == ACTOR_STATE.WALKING) {
-			if(facing == dir) {
+		if (state == ACTOR_STATE.WALKING) {
+			if (facing == dir) {
 				moveRequestThisFrame = true;
 			}
 			return false;
 		}
-		
+
 		// Check Map
 		if (mapName == "VillageState") {
 			// Collision Lava
@@ -159,7 +164,7 @@ public class Actor {
 			} else if ((x + dir.getDx() > 11) && (y + dir.getDy() < 1)) {
 				return false;
 			}
-			
+
 			// Collision House
 			if ((x + dir.getDx() > 14 && x + dir.getDx() < 16.5f) && (y + dir.getDy() > 1 && y + dir.getDy() < 4.5f)) {
 				return false;
@@ -170,71 +175,91 @@ public class Actor {
 			}
 		} else if (mapName == "JungleState") {
 			// Collision Tree
-			if((x + dir.getDx() > 0 && x + dir.getDx() < 6) && (y + dir.getDy() > 11.5f && y + dir.getDy() < 13.5f)) {
+			if ((x + dir.getDx() > 0 && x + dir.getDx() < 6) && (y + dir.getDy() > 11.5f && y + dir.getDy() < 13.5f)) {
 				return false;
-			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 1) && (y + dir.getDy() > 9.5f && y + dir.getDy() < 13.5f)) {
+			} else if ((x + dir.getDx() >= 0 && x + dir.getDx() < 1)
+					&& (y + dir.getDy() > 9.5f && y + dir.getDy() < 13.5f)) {
 				return false;
-			} else if((x + dir.getDx() > 1.5f && x + dir.getDx() < 6) && (y + dir.getDy() > 7.5f && y + dir.getDy() < 10.5f)) {
+			} else if ((x + dir.getDx() > 1.5f && x + dir.getDx() < 6)
+					&& (y + dir.getDy() > 7.5f && y + dir.getDy() < 10.5f)) {
 				return false;
-			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 2.5f) && (y + dir.getDy() > 5.5f && y + dir.getDy() < 8.5f)) {
+			} else if ((x + dir.getDx() >= 0 && x + dir.getDx() < 2.5f)
+					&& (y + dir.getDy() > 5.5f && y + dir.getDy() < 8.5f)) {
 				return false;
-			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 0 && y + dir.getDy() < 6)) {
+			} else if ((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f)
+					&& (y + dir.getDy() >= 0 && y + dir.getDy() < 6)) {
 				return false;
-			} else if((x + dir.getDx() >= 0.5f && x + dir.getDx() <= 11) && (y + dir.getDy() >= 0 && y + dir.getDy() < 2)) {
+			} else if ((x + dir.getDx() >= 0.5f && x + dir.getDx() <= 11)
+					&& (y + dir.getDy() >= 0 && y + dir.getDy() < 2)) {
 				return false;
-			} else if((x + dir.getDx() > 11 && x + dir.getDx() < 14.5f) && (y + dir.getDy() >= 0 && y + dir.getDy() <= 4)) {
+			} else if ((x + dir.getDx() > 11 && x + dir.getDx() < 14.5f)
+					&& (y + dir.getDy() >= 0 && y + dir.getDy() <= 4)) {
 				return false;
-			} else if((x + dir.getDx() > 4 && x + dir.getDx() <= 7) && (y + dir.getDy() > 5 && y + dir.getDy() < 7.5f)) {
+			} else if ((x + dir.getDx() > 4 && x + dir.getDx() <= 7)
+					&& (y + dir.getDy() > 5 && y + dir.getDy() < 7.5f)) {
 				return false;
-			} else if((x + dir.getDx() > 14 && x + dir.getDx() <= 16) && (y + dir.getDy() > 11 && y + dir.getDy() < 13)) {
+			} else if ((x + dir.getDx() > 14 && x + dir.getDx() <= 16)
+					&& (y + dir.getDy() > 11 && y + dir.getDy() < 13)) {
 				return false;
 			}
-			
+
 			// Collision Water
-			if((x + dir.getDx() > 6.5f && x + dir.getDx() <= 7.5f) && (y + dir.getDy() >= 8 && y + dir.getDy() <= 12.5f)) {
+			if ((x + dir.getDx() > 6.5f && x + dir.getDx() <= 7.5f)
+					&& (y + dir.getDy() >= 8 && y + dir.getDy() <= 12.5f)) {
 				return false;
-			} else if((x + dir.getDx() >= 8 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() > 12.5f && y + dir.getDy() <= 13.5f)) {
+			} else if ((x + dir.getDx() >= 8 && x + dir.getDx() <= 19.5f)
+					&& (y + dir.getDy() > 12.5f && y + dir.getDy() <= 13.5f)) {
 				return false;
-			} else if((x + dir.getDx() > 6.5f && x + dir.getDx() <= 7.5f) && (y + dir.getDy() > 3.5f && y + dir.getDy() < 7.5f)) {
+			} else if ((x + dir.getDx() > 6.5f && x + dir.getDx() <= 7.5f)
+					&& (y + dir.getDy() > 3.5f && y + dir.getDy() < 7.5f)) {
 				return false;
-			} else if((x + dir.getDx() > 6.5f && x + dir.getDx() <= 7.5f) && (y + dir.getDy() >= 0 && y + dir.getDy() < 3.5f)) {
+			} else if ((x + dir.getDx() > 6.5f && x + dir.getDx() <= 7.5f)
+					&& (y + dir.getDy() >= 0 && y + dir.getDy() < 3.5f)) {
 				return false;
-			} else if((x + dir.getDx() >= 8 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() > 4 && y + dir.getDy() < 5.5f)) {
+			} else if ((x + dir.getDx() >= 8 && x + dir.getDx() <= 19.5f)
+					&& (y + dir.getDy() > 4 && y + dir.getDy() < 5.5f)) {
 				return false;
 			}
-			
+
 			// Collsion House
-			if((x + dir.getDx() > 8.5f && x + dir.getDx() < 12) && (y + dir.getDy() >= 10 && y + dir.getDy() < 12)) {
+			if ((x + dir.getDx() > 8.5f && x + dir.getDx() < 12) && (y + dir.getDy() >= 10 && y + dir.getDy() < 12)) {
 				return false;
-			} else if((x + dir.getDx() > 16 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 10 && y + dir.getDy() <= 11)) {
+			} else if ((x + dir.getDx() > 16 && x + dir.getDx() <= 19.5f)
+					&& (y + dir.getDy() >= 10 && y + dir.getDy() <= 11)) {
 				return false;
-			} else if((x + dir.getDx() > 15 && x + dir.getDx() < 19) && (y + dir.getDy() >= 6.5f && y + dir.getDy() <= 8)) {
+			} else if ((x + dir.getDx() > 15 && x + dir.getDx() < 19)
+					&& (y + dir.getDy() >= 6.5f && y + dir.getDy() <= 8)) {
 				return false;
 			}
-			
+
 			// Collision Wall
-			if((x + dir.getDx() >= 8.5f && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 5.5f && y + dir.getDy() < 6)) {
+			if ((x + dir.getDx() >= 8.5f && x + dir.getDx() <= 19.5f)
+					&& (y + dir.getDy() >= 5.5f && y + dir.getDy() < 6)) {
 				return false;
-			} else if((x + dir.getDx() >= 5.5f && x + dir.getDx() < 8.5f) && (y + dir.getDy() >= 5.5f && y + dir.getDy() < 7)) {
+			} else if ((x + dir.getDx() >= 5.5f && x + dir.getDx() < 8.5f)
+					&& (y + dir.getDy() >= 5.5f && y + dir.getDy() < 7)) {
 				return false;
-			} else if((x + dir.getDx() >= 7 && x + dir.getDx() < 8.5f) && (y + dir.getDy() > 7.5f && y + dir.getDy() < 12.5f)) {
+			} else if ((x + dir.getDx() >= 7 && x + dir.getDx() < 8.5f)
+					&& (y + dir.getDy() > 7.5f && y + dir.getDy() < 12.5f)) {
 				return false;
-			} else if((x + dir.getDx() >= 8.5f && x + dir.getDx() <= 19.5f) && (y + dir.getDy() > 11.5f && y + dir.getDy() < 12.5f)) {
+			} else if ((x + dir.getDx() >= 8.5f && x + dir.getDx() <= 19.5f)
+					&& (y + dir.getDy() > 11.5f && y + dir.getDy() < 12.5f)) {
 				return false;
 			}
 		}
-			
-		if(x+dir.getDx() >= Gdx.graphics.getWidth()/32 || x+dir.getDx() < 0 || y+dir.getDy() >= Gdx.graphics.getHeight()/33 || y+dir.getDy() < 0) {
+
+		if (x + dir.getDx() >= Gdx.graphics.getWidth() / 32 || x + dir.getDx() < 0
+				|| y + dir.getDy() >= Gdx.graphics.getHeight() / 33 || y + dir.getDy() < 0) {
 			return false;
 		}
-		
+
 		initMove(dir);
 		x += dir.getDx();
 		y += dir.getDy();
-		
+
 		return true;
 	}
-	
+
 	public void initMove(DIRECTION dir) {
 		this.facing = dir;
 		this.srcX = x;
@@ -246,7 +271,7 @@ public class Actor {
 		animaTimer = 0f;
 		state = ACTOR_STATE.WALKING;
 	}
-	
+
 	public void finishMove() {
 		state = ACTOR_STATE.STANDING;
 		this.worldX = destX;
@@ -272,14 +297,14 @@ public class Actor {
 	public float getWorldY() {
 		return worldY;
 	}
-	
+
 	public TextureRegion getSprite() {
-		if(state == ACTOR_STATE.WALKING) {
+		if (state == ACTOR_STATE.WALKING) {
 			return animationPlayer.getWalking(facing).getKeyFrame(walkTimer);
-		} else if(state == ACTOR_STATE.STANDING) {
+		} else if (state == ACTOR_STATE.STANDING) {
 			return animationPlayer.getStanding(facing);
 		}
-		
+
 		return animationPlayer.getStanding(DIRECTION.SOUTH);
 	}
 
@@ -290,5 +315,5 @@ public class Actor {
 	public void setPlayerHP(String playerHP) {
 		this.playerHP = playerHP;
 	}
-	
+
 }

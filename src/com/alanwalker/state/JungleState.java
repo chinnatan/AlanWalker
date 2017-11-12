@@ -171,15 +171,16 @@ public class JungleState extends AbstractState {
 	
 	public void update(float delta) {
 		countQuestLabel.setText("Quest 1 : " + loadPlayer.getProp().getProperty("Quest1CountMonster") + "/10");
+		playerLevelLabel.setText("Level : " + level);
 	}
 	
 	@Override
 	public void render(float delta) {
 		
-		update(delta);
-
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		update(delta);
 		
 		if(loadPlayer.getProp().getProperty("Quest1").equals("start")) {
 			countQuestLabel.setVisible(true);
@@ -209,7 +210,7 @@ public class JungleState extends AbstractState {
 
 		camera.update();
 		
-		// Press "C" to talk Nurse in nearby
+		// Press "C" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
 				screen = new QuestTalk1State(aw, player.getX(), player.getY());
@@ -220,7 +221,7 @@ public class JungleState extends AbstractState {
 		// to Village map
 		if (actor.overlaps(toVillage)) {
 			try {
-				loadPlayer.getProp().setProperty("mapName", "JungleState");
+				loadPlayer.getProp().setProperty("mapName", "VillageState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
