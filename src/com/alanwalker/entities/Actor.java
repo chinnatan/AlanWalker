@@ -180,7 +180,7 @@ public class Actor {
 				return false;
 			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 0 && y + dir.getDy() < 6)) {
 				return false;
-			} else if((x + dir.getDx() >= 0.5f && x + dir.getDx() < 11) && (y + dir.getDy() >= 0 && y + dir.getDy() < 2)) {
+			} else if((x + dir.getDx() >= 0.5f && x + dir.getDx() <= 11) && (y + dir.getDy() >= 0 && y + dir.getDy() < 2)) {
 				return false;
 			} else if((x + dir.getDx() > 11 && x + dir.getDx() < 14.5f) && (y + dir.getDy() >= 0 && y + dir.getDy() <= 4)) {
 				return false;
