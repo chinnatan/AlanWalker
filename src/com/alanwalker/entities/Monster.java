@@ -13,7 +13,7 @@ public class Monster {
 
 	public Monster(String state) {
 		this.state = state;
-		if(state == "VillageState") {
+		if(state == "JungleState") {
 			monster = new Texture(Gdx.files.internal("resource/character/alan.png"));
 			monsterHp = 10;
 			monsterAttack = 0;
@@ -22,7 +22,7 @@ public class Monster {
 	}
 	
 	public void update() {
-		if (state == "VillageState") {
+		if (state == "JungleState") {
 			monsterAttack = (int) (Math.random() * 10);
 		}
 	}

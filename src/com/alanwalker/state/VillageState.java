@@ -1,5 +1,9 @@
 package com.alanwalker.state;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import com.alanwalker.entities.Actor;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
@@ -54,10 +58,6 @@ public class VillageState extends AbstractState {
 	private Stage stage;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
-
-	public VillageState() {
-
-	}
 
 	public VillageState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
@@ -199,6 +199,14 @@ public class VillageState extends AbstractState {
 		
 		// to Jungle map
 		if (actor.overlaps(toJungle)) {
+			try {
+				loadPlayer.getProp().setProperty("mapName", "JungleState");
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			screen = new JungleState(aw, 6.5f, 12);
 			aw.setScreen(screen);
 		}

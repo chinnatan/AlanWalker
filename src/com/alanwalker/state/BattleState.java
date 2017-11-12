@@ -61,6 +61,7 @@ public class BattleState extends AbstractState {
 	private int monsterHp;
 	private int monsterAttack;
 	private int monsterExp;
+	private int countMonster;
 
 	public BattleState(AlanWalker aw, String monster, float oldX, float oldY) {
 		super(aw);
@@ -121,15 +122,21 @@ public class BattleState extends AbstractState {
 				monsterHp -= playerAttack;
 				if (monsterHp <= 0) {
 					playerExp += monsterExp;
+					if(!(loadPlayer.getProp().getProperty("Quest1CountMonster").equals("10"))) {
+						countMonster++;
+					}
 					try {
 						loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
+						loadPlayer.getProp().setProperty("Quest1CountMonster", Integer.toString(countMonster));
 						loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
 						loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
 						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
+					if(loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
+						aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+					}
 				}
 				youTurn = false;
 				monTurn = true;
@@ -191,6 +198,8 @@ public class BattleState extends AbstractState {
 
 	@Override
 	public void render(float delta) {
+		
+		System.out.println(countMonster);
 		
 		// Clear Screen
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -292,6 +301,7 @@ public class BattleState extends AbstractState {
 		monsterHp = monster.getHpMonster();
 		monsterAttack = monster.getMonsterAttack();
 		monsterExp = monster.getMonsterExp();
+		countMonster = Integer.parseInt(loadPlayer.getProp().getProperty("Quest1CountMonster"));
 	}
 
 }

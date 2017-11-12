@@ -17,6 +17,7 @@ public class LoadSave {
 	private String startX = "10.5";
 	private String startY = "0"; 
 	private String exp = "0";
+	private String mapName = "VillageState";
 	
 	private Properties prop = new Properties();
 	private OutputStream outputSave = null;
@@ -32,6 +33,7 @@ public class LoadSave {
 			playerHP = prop.getProperty("hp");
 			startX = prop.getProperty("startX");
 			startY = prop.getProperty("startY");
+			mapName = prop.getProperty("mapName");
 		} catch (FileNotFoundException e) {
 			try {
 				outputSave = new FileOutputStream("saves/save.properties");
@@ -42,6 +44,13 @@ public class LoadSave {
 				prop.setProperty("attack", attack);
 				prop.setProperty("startX", startX);
 				prop.setProperty("startY", startY);
+				prop.setProperty("mapName", mapName);
+				prop.setProperty("Quest1", "null");
+				prop.setProperty("Quest1CountMonster", "null");
+				prop.setProperty("Quest2", "null");
+				prop.setProperty("Quest2CountMonster", "null");
+				prop.setProperty("Quest3", "null");
+				prop.setProperty("Quest3CountMonster", "null");
 				// save properties to project root folder
 				prop.store(outputSave, null);
 			} catch (IOException io) {

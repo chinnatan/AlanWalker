@@ -1,5 +1,9 @@
 package com.alanwalker.state;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import com.alanwalker.entities.Actor;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
@@ -37,7 +41,7 @@ public class JungleState extends AbstractState {
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn, actor, nurse, toVillage;
+	protected Rectangle monsterSpawn, actor, npcQuest, toVillage;
 	private double positionMonsterX;
 	private double positionMonsterY;
 
@@ -54,6 +58,8 @@ public class JungleState extends AbstractState {
 	private Stage stage;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
+	private Label countQuestLabel;
+	private Label.LabelStyle countQuestStyle;
 
 	public JungleState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
@@ -82,30 +88,37 @@ public class JungleState extends AbstractState {
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
+		countQuestStyle = new Label.LabelStyle();
+		countQuestStyle.font = skin.getFont("default");
 
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 		
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
-		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerHPLabel.setColor(Color.WHITE);
 		playerHPLabel.setFontScale(1f, 1f);
 		playerLevelLabel = new Label("Level : " + level, playerLevelStyle);
-		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		playerLevelLabel.setColor(Color.WHITE);
 		playerLevelLabel.setFontScale(1f, 1f);
 		playerExpLabel = new Label("Exp : " + exp, playerExpStyle);
-		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 10, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
+		countQuestLabel = new Label("Quest 1 : " + loadPlayer.getProp().getProperty("Quest1CountMonster") + "/10", countQuestStyle);
+		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+		countQuestLabel.setColor(Color.WHITE);
+		countQuestLabel.setFontScale(1f, 1f);
 		
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
+		stage.addActor(countQuestLabel);
 
-		positionMonsterX = Math.random() * 10 + 1;
-		positionMonsterY = Math.random() * 3 + 1;
+		positionMonsterX = Math.random() * 6 + 1;
+		positionMonsterY = Math.random() * 3 + 2;
 		
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
@@ -156,16 +169,27 @@ public class JungleState extends AbstractState {
 
 	}
 	
+	public void update(float delta) {
+		countQuestLabel.setText("Quest 1 : " + loadPlayer.getProp().getProperty("Quest1CountMonster") + "/10");
+	}
+	
 	@Override
 	public void render(float delta) {
+		
+		update(delta);
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		nurse = new Rectangle(12, 7, 1, 1);
+		if(loadPlayer.getProp().getProperty("Quest1").equals("start")) {
+			countQuestLabel.setVisible(true);
+		} else {
+			countQuestLabel.setVisible(false);
+		}
+		
+		npcQuest = new Rectangle(9, 9.5f, 1, 1);
 		toVillage = new Rectangle(7, 13.5f, 0.5f, 0.5f);
-//		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
-		monsterSpawn = new Rectangle(11, 1, 0, 0);
+		monsterSpawn = new Rectangle(0.5f, 2, 6, 3);
 
 		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
 		playerControll.update(delta);
@@ -186,23 +210,36 @@ public class JungleState extends AbstractState {
 		camera.update();
 		
 		// Press "C" to talk Nurse in nearby
-		if (actor.overlaps(nurse)) {
+		if (actor.overlaps(npcQuest)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-				screen = new NurseState(aw, player.getX(), player.getY());
+				screen = new QuestTalk1State(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}
 		
 		// to Village map
 		if (actor.overlaps(toVillage)) {
+			try {
+				loadPlayer.getProp().setProperty("mapName", "JungleState");
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			screen = new VillageState(aw, 11, 1.5f);
 			aw.setScreen(screen);
 		}
 		
+		System.out.println(actor.overlaps(monsterSpawn));
+		System.out.println(positionMonsterX);
+		System.out.println(positionMonsterY);
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn)) {
-			screen = new BattleState(aw, "VillageState", player.getX(), player.getY());
-			aw.setScreen(screen);
+			if((int) positionMonsterX == player.getX() && (int) positionMonsterY == player.getY()) {
+				screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
+				aw.setScreen(screen);
+			}
 		}
 		
 		mapRender.setView(camera);
