@@ -14,16 +14,23 @@ public class Monster {
 	public Monster(String state) {
 		this.state = state;
 		if(state == "JungleState") {
-			monster = new Texture(Gdx.files.internal("resource/character/alan.png"));
+			monster = new Texture(Gdx.files.internal("resource/monsterandboss/Slime.png"));
 			monsterHp = 10;
 			monsterAttack = 0;
 			monsterExp = 2;
+		} else if(state == "JungleBoss") {
+			monster = new Texture(Gdx.files.internal("resource/monsterandboss/BossLion.png"));
+			monsterHp = 50;
+			monsterAttack = 0;
+			monsterExp = 10;
 		}
 	}
 	
 	public void update() {
 		if (state == "JungleState") {
 			monsterAttack = (int) (Math.random() * 10);
+		} else if(state == "JungleBoss") {
+			monsterAttack = (int) (Math.random() * 20);
 		}
 	}
 

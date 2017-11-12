@@ -93,6 +93,8 @@ public class QuestTalk1State extends AbstractState {
 			public void clicked(InputEvent event, float x, float y) {
 				if(loadPlayer.getProp().getProperty("Quest1").equals("start")) {
 					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+				} else if(loadPlayer.getProp().getProperty("Quest1").equals("end")) {
+					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
 				} else {
 					try {
 						loadPlayer.getProp().setProperty("Quest1", "start");
@@ -102,6 +104,16 @@ public class QuestTalk1State extends AbstractState {
 						e.printStackTrace();
 					}
 					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+				}
+				
+				if(loadPlayer.getProp().getProperty("Quest1").equals("start") && loadPlayer.getProp().getProperty("Quest1CountMonster").equals("10")) {
+//					try {
+//						loadPlayer.getProp().setProperty("Quest1", "end");
+//						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+					aw.setScreen(new BattleState(aw, "JungleBoss", positionPlayerX, positionPlayerY));
 				}
 			}
 		});
@@ -175,6 +187,13 @@ public class QuestTalk1State extends AbstractState {
 				npcQuestLabel.setColor(Color.WHITE);
 				npcQuestLabel.setFontScale(1f, 1f);
 			}
+		} else {
+			npcQuestLabel.setText("คุณผ่านเควสนี้เรียบร้อยแล้ว...กรุณาทำเควสด่านถัดไป");
+			npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+			npcQuestLabel.setColor(Color.WHITE);
+			npcQuestLabel.setFontScale(1f, 1f);
+			yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+			noButton.setVisible(false);
 		}
 
 		// Draw All Object on Screen
