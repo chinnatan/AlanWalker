@@ -45,11 +45,11 @@ public class BattleState extends AbstractState {
 	private boolean youTurn = true, monTurn;
 	private int flagTurnShowLabel;
 	private float delayTime = 0, delayTimeAttack = 0;
-	
+
 	private Properties prop = new Properties();
 	private InputStream input = null;
 	private OutputStream output = null;
-	
+
 	// Player Status
 	private int playerHp;
 	private int playerLevel;
@@ -57,19 +57,21 @@ public class BattleState extends AbstractState {
 	private int playerAttack;
 	private float positionPlayerX, positionPlayerY;
 	private LoadSave loadPlayer;
-	
+
 	// Monster Status
 	private int monsterHp;
 	private int monsterAttack;
 	private int monsterExp;
 	private int countMonster;
+	private String monsterName;
 
 	public BattleState(AlanWalker aw, String monster, float oldX, float oldY) {
 		super(aw);
 		this.monster = new Monster(monster);
+		this.monsterName = monster;
 		this.player = new Actor();
 		sb = new SpriteBatch();
-		
+
 		// Load data player
 		loadPlayer = new LoadSave();
 		playerLevel = Integer.parseInt(loadPlayer.getLevel());
@@ -78,7 +80,7 @@ public class BattleState extends AbstractState {
 		playerAttack = Integer.parseInt(loadPlayer.getAttack()) * playerLevel;
 		positionPlayerX = oldX;
 		positionPlayerY = oldY;
-		
+
 		// Load Alan Character
 		alanCharacter = new Texture(Gdx.files.internal("resource/character/alan/alan-battle.png"));
 
@@ -123,7 +125,7 @@ public class BattleState extends AbstractState {
 				monsterHp -= playerAttack;
 				if (monsterHp <= 0) {
 					playerExp += monsterExp;
-					if(monster == "JungleBoss") {
+					if (monster == "JungleBoss") {
 						try {
 							loadPlayer.getProp().setProperty("Quest1", "end");
 							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
@@ -133,7 +135,7 @@ public class BattleState extends AbstractState {
 							e.printStackTrace();
 						}
 					}
-					if(!(loadPlayer.getProp().getProperty("Quest1CountMonster").equals("10"))) {
+					if (!(loadPlayer.getProp().getProperty("Quest1CountMonster").equals("10"))) {
 						countMonster++;
 					}
 					try {
@@ -145,7 +147,7 @@ public class BattleState extends AbstractState {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					if(loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
+					if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
 						aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
 					}
 				}
@@ -172,7 +174,7 @@ public class BattleState extends AbstractState {
 		playerTurnLabel.setText("Your Turn !!");
 		attackButton.setTouchable(Touchable.disabled);
 		attackButton.setDisabled(true);
-		
+
 		stage.addActor(attackButton);
 		stage.addActor(monsterHpLabel);
 		stage.addActor(playerHpLabel);
@@ -188,7 +190,7 @@ public class BattleState extends AbstractState {
 
 	@Override
 	public void hide() {
-//		dispose();
+		// dispose();
 	}
 
 	@Override
@@ -200,7 +202,7 @@ public class BattleState extends AbstractState {
 	public void update(float delta) {
 		// Update Attack
 		playerAttack = Integer.parseInt(loadPlayer.getAttack());
-		
+
 		monsterHpLabel.setText("HP : " + monsterHp);
 		playerHpLabel.setText("HP : " + playerHp);
 		monster.update();
@@ -209,13 +211,13 @@ public class BattleState extends AbstractState {
 
 	@Override
 	public void render(float delta) {
-		
+
 		System.out.println(countMonster);
-		
+
 		// Clear Screen
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		// Delay Time Label and Delay Time to Attack
 		delayTimeAttack += delta;
 
@@ -233,13 +235,13 @@ public class BattleState extends AbstractState {
 			attackButton.setTouchable(Touchable.disabled);
 			attackButton.setDisabled(true);
 		}
-		
+
 		// Update All Text on Screen
 		update(delta);
 
 		// Draw All Object on Screen
 		sb.begin();
-		
+
 		// Check Monster Turn and Show Label
 		if (monTurn == true) {
 			if (delayTimeAttack > 3) {
@@ -269,8 +271,8 @@ public class BattleState extends AbstractState {
 					monTurn = false;
 					playerTurnLabel.setText("Your Turn !!");
 				}
-				
-				if(playerHp <= 0) {
+
+				if (playerHp <= 0) {
 					try {
 						loadPlayer.getProp().setProperty("hp", "50");
 						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
@@ -284,7 +286,7 @@ public class BattleState extends AbstractState {
 				}
 			}
 		}
-		
+
 		sb.draw(alanCharacter, Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 20 - 100);
 		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 100, Gdx.graphics.getHeight() / 2 + 50);
 		sb.draw(dialogueBox, (Gdx.graphics.getWidth() / 60), 0, Gdx.graphics.getWidth() - 20,
@@ -312,7 +314,11 @@ public class BattleState extends AbstractState {
 		monsterHp = monster.getHpMonster();
 		monsterAttack = monster.getMonsterAttack();
 		monsterExp = monster.getMonsterExp();
-		countMonster = Integer.parseInt(loadPlayer.getProp().getProperty("Quest1CountMonster"));
+		if (monsterName == "JungleState") {
+			countMonster = Integer.parseInt(loadPlayer.getProp().getProperty("Quest1CountMonster"));
+		} else if (monsterName == "JungleToCaveState") {
+			countMonster = Integer.parseInt(loadPlayer.getProp().getProperty("Quest2CountMonster"));
+		}
 	}
 
 }

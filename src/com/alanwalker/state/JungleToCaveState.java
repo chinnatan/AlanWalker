@@ -41,9 +41,11 @@ public class JungleToCaveState extends AbstractState{
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn, actor, npcQuest;
-	private double positionMonsterX;
-	private double positionMonsterY;
+	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcQuest;
+	private double positionMonster1X;
+	private double positionMonster1Y;
+	private double positionMonster2X;
+	private double positionMonster2Y;
 	
 	// Move Map
 	private Rectangle toJungle;
@@ -110,7 +112,7 @@ public class JungleToCaveState extends AbstractState{
 		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
-		countQuestLabel = new Label("Quest 1 : " + loadPlayer.getProp().getProperty("Quest1CountMonster") + "/10", countQuestStyle);
+		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10", countQuestStyle);
 		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		countQuestLabel.setColor(Color.WHITE);
 		countQuestLabel.setFontScale(1f, 1f);
@@ -120,8 +122,10 @@ public class JungleToCaveState extends AbstractState{
 		stage.addActor(playerExpLabel);
 		stage.addActor(countQuestLabel);
 
-		positionMonsterX = Math.random() * 6 + 1;
-		positionMonsterY = Math.random() * 3 + 2;
+		positionMonster1X = Math.random() * 8 + 8;
+		positionMonster1Y = Math.random() * 4 + 9;
+		positionMonster2X = Math.random() * 8 + 8;
+		positionMonster2Y = Math.random() * 2 + 6;
 		
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
@@ -175,7 +179,7 @@ public class JungleToCaveState extends AbstractState{
 	}
 
 	public void update(float delta) {
-		countQuestLabel.setText("Quest 1 : " + loadPlayer.getProp().getProperty("Quest1CountMonster") + "/10");
+		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10");
 		playerLevelLabel.setText("Level : " + level);
 	}
 	
@@ -187,15 +191,16 @@ public class JungleToCaveState extends AbstractState{
 		
 		update(delta);
 		
-		if(loadPlayer.getProp().getProperty("Quest1").equals("start")) {
+		if(loadPlayer.getProp().getProperty("Quest2").equals("start")) {
 			countQuestLabel.setVisible(true);
 		} else {
 			countQuestLabel.setVisible(false);
 		}
 		
-		npcQuest = new Rectangle(9, 9.5f, 1, 1);
+		npcQuest = new Rectangle(7.5f, 8, 1, 1);
 		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
-		monsterSpawn = new Rectangle(0.5f, 2, 6, 3);
+		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
+		monsterSpawn2 = new Rectangle(8, 6.5f, 8, 2);
 
 		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
 		playerControll.update(delta);
@@ -218,7 +223,7 @@ public class JungleToCaveState extends AbstractState{
 		// Press "C" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-				screen = new QuestTalk1State(aw, player.getX(), player.getY());
+				screen = new QuestTalk2State(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}
@@ -237,10 +242,20 @@ public class JungleToCaveState extends AbstractState{
 			aw.setScreen(screen);
 		}
 		
+		System.out.println("X 1 : " + positionMonster1X);
+		System.out.println("Y 1 : " + positionMonster1Y);
+		System.out.println("X 2 : " + positionMonster2X);
+		System.out.println("Y 2 : " + positionMonster2Y);
+		
 		// Detection Monster in map
-		if (actor.overlaps(monsterSpawn)) {
-			if((int) positionMonsterX == player.getX() && (int) positionMonsterY == player.getY()) {
-				screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
+		if (actor.overlaps(monsterSpawn1)) {
+			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
+				aw.setScreen(screen);
+			}
+		} else if (actor.overlaps(monsterSpawn2)) {
+			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}

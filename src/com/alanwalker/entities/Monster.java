@@ -23,6 +23,11 @@ public class Monster {
 			monsterHp = 50;
 			monsterAttack = 0;
 			monsterExp = 10;
+		} else if(state == "JungleToCaveState") {
+			monster = new Texture(Gdx.files.internal("resource/monsterandboss/Slime.png"));
+			monsterHp = 50;
+			monsterAttack = 0;
+			monsterExp = 5;
 		}
 	}
 	
@@ -31,6 +36,8 @@ public class Monster {
 			monsterAttack = (int) (Math.random() * 10);
 		} else if(state == "JungleBoss") {
 			monsterAttack = (int) (Math.random() * 20);
+		} else if(state == "JungleToCaveState") {
+			monsterAttack = (int) (Math.random() * 30);
 		}
 	}
 
