@@ -246,6 +246,38 @@ public class Actor {
 					&& (y + dir.getDy() > 11.5f && y + dir.getDy() < 12.5f)) {
 				return false;
 			}
+		} else if (mapName == "JungleToCaveState") {
+			// Collision Tree
+			if((x + dir.getDx() > 17 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 7 && y + dir.getDy() < 9)) {
+				return false;
+			} else if((x + dir.getDx() > 16 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 10 && y + dir.getDy() < 13.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() < 8) && (y + dir.getDy() >= 9.5 && y + dir.getDy() < 12)) {
+				return false;
+			} else if((x + dir.getDx() >= 1.5f && x + dir.getDx() < 5.5f) && (y + dir.getDy() >= 9.5 && y + dir.getDy() < 11)) {
+				return false;
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 8 && y + dir.getDy() < 9.5f)) {
+				return false;
+			}
+
+			// Collision Water
+			if((x + dir.getDx() > 5 && x + dir.getDx() < 7) && (y + dir.getDy() >= 8 && y + dir.getDy() < 8.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 5 && x + dir.getDx() < 7) && (y + dir.getDy() >= 9.5f && y + dir.getDy() < 15)) {
+				return false;
+			}
+			
+			// Collsion Wall
+			if((x + dir.getDx() >= 8 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 6 && y + dir.getDy() < 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 7.5f && x + dir.getDx() < 8) && (y + dir.getDy() >= 6.5f && y + dir.getDy() < 8)) {
+				return false;
+			} else if((x + dir.getDx() >= 7 && x + dir.getDx() < 7.5f) && (y + dir.getDy() >= 7.5f && y + dir.getDy() < 8)) {
+				return false;
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() <= 5) && (y + dir.getDy() >= 7.5f && y + dir.getDy() < 8)) {
+				return false;
+			}
+
 		}
 
 		if (x + dir.getDx() >= Gdx.graphics.getWidth() / 32 || x + dir.getDx() < 0

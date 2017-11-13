@@ -18,9 +18,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -29,8 +29,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class JungleState extends AbstractState {
-
+public class JungleToCaveState extends AbstractState{
+	
 	private AbstractState screen;
 	private Actor player;
 	private PlayerControll playerControll;
@@ -41,13 +41,12 @@ public class JungleState extends AbstractState {
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	private Rectangle monsterSpawn, actor, npcQuest;
+	protected Rectangle monsterSpawn, actor, npcQuest;
 	private double positionMonsterX;
 	private double positionMonsterY;
 	
 	// Move Map
-	private Rectangle toVillage;
-	private Rectangle toCave;
+	private Rectangle toJungle;
 
 	// Status Player
 	private String level;
@@ -64,8 +63,8 @@ public class JungleState extends AbstractState {
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
 	private Label countQuestLabel;
 	private Label.LabelStyle countQuestStyle;
-
-	public JungleState(AlanWalker aw, float positionX, float positionY) {
+	
+	public JungleToCaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
 
@@ -121,7 +120,6 @@ public class JungleState extends AbstractState {
 		stage.addActor(playerExpLabel);
 		stage.addActor(countQuestLabel);
 
-		// Respawn Monster in Map
 		positionMonsterX = Math.random() * 6 + 1;
 		positionMonsterY = Math.random() * 3 + 2;
 		
@@ -139,7 +137,7 @@ public class JungleState extends AbstractState {
 				alanAtlas.findRegion("alan_stand_east"), alanAtlas.findRegion("alan_stand_west"));
 
 		// Load Map Village
-		map = new TmxMapLoader().load("resource/maps/jungle/jungle.tmx");
+		map = new TmxMapLoader().load("resource/maps/jungle/jungletocave.tmx");
 
 		// Render Map Village
 		mapRender = new OrthogonalTiledMapRenderer(map);
@@ -148,7 +146,7 @@ public class JungleState extends AbstractState {
 		camera = new OrthographicCamera();
 
 		// Load Player
-		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "JungleState");
+		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "JungleToCaveState");
 
 		// Load Player Controll
 		playerControll = new PlayerControll(player);
@@ -166,14 +164,16 @@ public class JungleState extends AbstractState {
 
 	@Override
 	public void hide() {
-
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void pause() {
-
+		// TODO Auto-generated method stub
+		
 	}
-	
+
 	public void update(float delta) {
 		countQuestLabel.setText("Quest 1 : " + loadPlayer.getProp().getProperty("Quest1CountMonster") + "/10");
 		playerLevelLabel.setText("Level : " + level);
@@ -194,8 +194,7 @@ public class JungleState extends AbstractState {
 		}
 		
 		npcQuest = new Rectangle(9, 9.5f, 1, 1);
-		toVillage = new Rectangle(7, 13.5f, 0.5f, 0.5f);
-		toCave = new Rectangle(0, 9, 0.5f, 0.5f);
+		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
 		monsterSpawn = new Rectangle(0.5f, 2, 6, 3);
 
 		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
@@ -225,30 +224,19 @@ public class JungleState extends AbstractState {
 		}
 		
 		// Move Map
-		if (actor.overlaps(toVillage)) { // -- to Village Map -- //
+		if (actor.overlaps(toJungle)) { // -- to Village Map -- //
 			try {
-				loadPlayer.getProp().setProperty("mapName", "VillageState");
+				loadPlayer.getProp().setProperty("mapName", "JungleState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			screen = new VillageState(aw, 11, 1.5f);
-			aw.setScreen(screen);
-		} else if(actor.overlaps(toCave)) { // -- to Cave Map -- //
-			try {
-				loadPlayer.getProp().setProperty("mapName", "JungleToCaveState");
-				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			screen = new JungleToCaveState(aw, 18, 9);
+			screen = new JungleState(aw, 0.5f, 9);
 			aw.setScreen(screen);
 		}
-
+		
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn)) {
 			if((int) positionMonsterX == player.getX() && (int) positionMonsterY == player.getY()) {
@@ -267,6 +255,7 @@ public class JungleState extends AbstractState {
 		sb.end();
 		stage.act();
 		stage.draw();
+		
 	}
 
 	@Override
@@ -277,11 +266,13 @@ public class JungleState extends AbstractState {
 
 	@Override
 	public void resume() {
-
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void show() {
+		// TODO Auto-generated method stub
 		
 	}
 
