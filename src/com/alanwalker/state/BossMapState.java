@@ -29,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class CaveState extends AbstractState{
+public class BossMapState extends AbstractState{
 	
 	private AbstractState screen;
 	private Actor player;
@@ -67,7 +67,7 @@ public class CaveState extends AbstractState{
 	private Label countQuestLabel;
 	private Label.LabelStyle countQuestStyle;
 	
-	public CaveState(AlanWalker aw, float positionX, float positionY) {
+	public BossMapState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
 
@@ -142,7 +142,7 @@ public class CaveState extends AbstractState{
 				alanAtlas.findRegion("alan_stand_east"), alanAtlas.findRegion("alan_stand_west"));
 
 		// Load Map Village
-		map = new TmxMapLoader().load("resource/maps/cave/cave.tmx");
+		map = new TmxMapLoader().load("resource/maps/bossmap/bossmap.tmx");
 
 		// Render Map Village
 		mapRender = new OrthogonalTiledMapRenderer(map);
@@ -151,7 +151,7 @@ public class CaveState extends AbstractState{
 		camera = new OrthographicCamera();
 
 		// Load Player
-		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "CaveState");
+		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "BossMapState");
 
 		// Load Player Control
 		playerControll = new PlayerControll(player);
@@ -179,18 +179,11 @@ public class CaveState extends AbstractState{
 		
 	}
 
-	public void update(float delta) {
-		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10");
-		playerLevelLabel.setText("Level : " + level);
-	}
-	
 	@Override
 	public void render(float delta) {
-		
+
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		update(delta);
 		
 		if(loadPlayer.getProp().getProperty("Quest2").equals("start")) {
 			countQuestLabel.setVisible(true);
@@ -233,14 +226,14 @@ public class CaveState extends AbstractState{
 		// Move Map
 		if (actor.overlaps(toBossMap)) { // -- to Boss Map -- //
 			try {
-				loadPlayer.getProp().setProperty("mapName", "JungleState");
+				loadPlayer.getProp().setProperty("mapName", "BossMapState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			screen = new BossMapState(aw, 5, 1.5f);
+			screen = new BossMapState(aw, 0.5f, 9);
 			aw.setScreen(screen);
 		} else if (actor.overlaps(toJungleToCave)) { // -- to Jungle To Cave Map -- //
 			try {
@@ -295,7 +288,6 @@ public class CaveState extends AbstractState{
 		sb.end();
 		stage.act();
 		stage.draw();
-		
 	}
 
 	@Override

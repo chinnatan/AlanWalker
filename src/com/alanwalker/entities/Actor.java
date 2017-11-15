@@ -398,6 +398,39 @@ public class Actor {
 				return false;
 			}
 			
+		} else if(mapName == "BossMapState") {
+			// Collsion Wall
+			if((x + dir.getDx() >= 0 && x + dir.getDx() < 4) && (y + dir.getDy() >= 1.5f && y + dir.getDy() <= 3.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 3.5f && x + dir.getDx() <= 6.5f) && (y + dir.getDy() >= 3.5f && y + dir.getDy() <= 7)) {
+				return false;
+			} else if((x + dir.getDx() >= 6 && x + dir.getDx() <= 9) && (y + dir.getDy() >= 1 && y + dir.getDy() < 2)) {
+				return false;
+			} else if((x + dir.getDx() > 8 && x + dir.getDx() <= 9) && (y + dir.getDy() >= 2 && y + dir.getDy() <= 3)) {
+				return false;
+			} else if((x + dir.getDx() > 8.5f && x + dir.getDx() <= 10) && (y + dir.getDy() >= 3.5f && y + dir.getDy() <= 7)) {
+				return false;
+			} else if((x + dir.getDx() > 0 && x + dir.getDx() < 4) && (y + dir.getDy() >= 7.5f && y + dir.getDy() <= 8.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() <= 8) && (y + dir.getDy() >= 8.5f && y + dir.getDy() <= 9)) {
+				return false;
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 4.5f) && (y + dir.getDy() >= 8.5f && y + dir.getDy() <= 10)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() <= 7) && (y + dir.getDy() >= 8.5f && y + dir.getDy() <= 11.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 8 && x + dir.getDx() <= 9) && (y + dir.getDy() >= 7.5f && y + dir.getDy() <= 8.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 0 && x + dir.getDx() <= 3.5f) && (y + dir.getDy() >= 10.5f && y + dir.getDy() <= 14.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 0 && x + dir.getDx() <= 6) && (y + dir.getDy() == 14)) {
+				return false;
+			} else if((x + dir.getDx() > 5 && x + dir.getDx() <= 6) && (y + dir.getDy() >= 11.5f && y + dir.getDy() <= 13)) {
+				return false;
+			} else if((x + dir.getDx() > 6 && x + dir.getDx() <= 7) && (y + dir.getDy() == 13.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 7 && x + dir.getDx() <= 7.5f) && (y + dir.getDy() > 3 && y + dir.getDy() < 4)) {
+				return false;
+			}
 		}
 
 		if (x + dir.getDx() >= Gdx.graphics.getWidth() / 32 || x + dir.getDx() < 0
