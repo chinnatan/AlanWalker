@@ -48,7 +48,7 @@ public class CaveState extends AbstractState{
 	private double positionMonster2Y;
 	
 	// Move Map
-	private Rectangle toJungle;
+	private Rectangle toBossMap;
 	private Rectangle toJungleToCave;
 
 	// Status Player
@@ -199,7 +199,7 @@ public class CaveState extends AbstractState{
 		}
 		
 		npcQuest = new Rectangle(7.5f, 8, 1, 1);
-		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
+		toBossMap = new Rectangle(7.5f, 14.5f, 1, 0.5f);
 		toJungleToCave = new Rectangle(0.5f, 13.5f, 0.5f, 0.5f);
 		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
 		monsterSpawn2 = new Rectangle(8, 6.5f, 8, 2);
@@ -231,29 +231,29 @@ public class CaveState extends AbstractState{
 		}
 		
 		// Move Map
-//		if (actor.overlaps(toJungle)) { // -- to Jungle Map -- //
-//			try {
-//				loadPlayer.getProp().setProperty("mapName", "JungleState");
-//				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//			screen = new JungleState(aw, 0.5f, 9);
-//			aw.setScreen(screen);
-//		} else if (actor.overlaps(toJungleToCave)) { // -- to Jungle To Cave Map -- //
-//			try {
-//				loadPlayer.getProp().setProperty("mapName", "JungleToCaveState");
-//				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//			screen = new JungleToCaveState(aw, 1, 9);
-//			aw.setScreen(screen);
-//		}
+		if (actor.overlaps(toBossMap)) { // -- to Boss Map -- //
+			try {
+				loadPlayer.getProp().setProperty("mapName", "JungleState");
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			screen = new JungleState(aw, 0.5f, 9);
+			aw.setScreen(screen);
+		} else if (actor.overlaps(toJungleToCave)) { // -- to Jungle To Cave Map -- //
+			try {
+				loadPlayer.getProp().setProperty("mapName", "JungleToCaveState");
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			screen = new JungleToCaveState(aw, 1, 9);
+			aw.setScreen(screen);
+		}
 		
 //		System.out.println("X 1 : " + positionMonster1X);
 //		System.out.println("Y 1 : " + positionMonster1Y);

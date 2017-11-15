@@ -41,7 +41,7 @@ public class VillageState extends AbstractState {
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn, actor, nurse, toJungle;
+	protected Rectangle monsterSpawn, actor, npcNurse, toJungle;
 	private double positionMonsterX;
 	private double positionMonsterY;
 
@@ -166,7 +166,7 @@ public class VillageState extends AbstractState {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		nurse = new Rectangle(12, 7, 1, 1);
+		npcNurse = new Rectangle(12, 7, 1, 1);
 		toJungle = new Rectangle(10.5f, 0, 1, 1);
 //		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
 //		monsterSpawn = new Rectangle(11, 1, 0, 0);
@@ -190,9 +190,9 @@ public class VillageState extends AbstractState {
 		camera.update();
 		
 		// Press "C" to talk Nurse in nearby
-		if (actor.overlaps(nurse)) {
+		if (actor.overlaps(npcNurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				screen = new NurseState(aw, player.getX(), player.getY());
+				screen = new NurseState(aw, player.getX(), player.getY(), "VillageState");
 				aw.setScreen(screen);
 			}
 		}

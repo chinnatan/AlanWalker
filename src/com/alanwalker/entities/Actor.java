@@ -401,7 +401,7 @@ public class Actor {
 		}
 
 		if (x + dir.getDx() >= Gdx.graphics.getWidth() / 32 || x + dir.getDx() < 0
-				|| y + dir.getDy() >= Gdx.graphics.getHeight() / 33 || y + dir.getDy() < 0) {
+				|| y + dir.getDy() >= Gdx.graphics.getHeight() / 32 || y + dir.getDy() < 0) {
 			return false;
 		}
 

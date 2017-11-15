@@ -41,7 +41,7 @@ public class JungleToCaveState extends AbstractState{
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcQuest;
+	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcNurse;
 	private double positionMonster1X;
 	private double positionMonster1Y;
 	private double positionMonster2X;
@@ -198,7 +198,7 @@ public class JungleToCaveState extends AbstractState{
 			countQuestLabel.setVisible(false);
 		}
 		
-		npcQuest = new Rectangle(7.5f, 8, 1, 1);
+		npcNurse = new Rectangle(7.5f, 8, 1, 1);
 		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
 		toCave = new Rectangle(1, 10, 0.5f, 05.f);
 		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
@@ -223,9 +223,9 @@ public class JungleToCaveState extends AbstractState{
 		camera.update();
 		
 		// Press "C" to talk NPC in nearby
-		if (actor.overlaps(npcQuest)) {
+		if (actor.overlaps(npcNurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				screen = new QuestTalk2State(aw, player.getX(), player.getY());
+				screen = new NurseState(aw, player.getX(), player.getY(), "JungleToCaveState");
 				aw.setScreen(screen);
 			}
 		}

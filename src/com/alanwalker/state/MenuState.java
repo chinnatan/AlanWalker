@@ -67,8 +67,8 @@ public class MenuState extends AbstractState{
         newGameButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-//				screen = new StoryState(aw);
-				screen = new CaveState(aw, 0.5f, 12.5f);
+				screen = new StoryState(aw);
+//				screen = new CaveState(aw, 8, 10);
 				aw.setScreen(screen);
 			}
 		});

@@ -28,6 +28,7 @@ public class NurseState extends AbstractState {
 	private Label.LabelStyle nurseStyle;
 	private TextButton yesButton, noButton;
 	private Texture dialogueBox, nurse;
+	private String mapName;
 
 	// Player Status
 	private int playerHp;
@@ -37,9 +38,10 @@ public class NurseState extends AbstractState {
 	private float positionPlayerX, positionPlayerY;
 	private LoadSave loadPlayer;
 
-	public NurseState(AlanWalker aw, float oldX, float oldY) {
+	public NurseState(AlanWalker aw, float oldX, float oldY, String mapName) {
 		super(aw);
 		sb = new SpriteBatch();
+		this.mapName = mapName;
 		
 		// Load data player
 		loadPlayer = new LoadSave();
@@ -100,7 +102,11 @@ public class NurseState extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
+				if(mapName == "VillageState") {
+					aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
+				} else if(mapName == "JungleToCaveState") {
+					aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
+				}
 			}
 		});
 		
