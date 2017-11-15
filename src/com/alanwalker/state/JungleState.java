@@ -218,7 +218,7 @@ public class JungleState extends AbstractState {
 		
 		// Press "C" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
-			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 				screen = new QuestTalk1State(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}

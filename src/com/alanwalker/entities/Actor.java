@@ -250,13 +250,13 @@ public class Actor {
 			// Collision Tree
 			if((x + dir.getDx() > 17 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 7 && y + dir.getDy() < 9)) {
 				return false;
-			} else if((x + dir.getDx() > 16 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 10 && y + dir.getDy() < 13.5f)) {
+			} else if((x + dir.getDx() > 16 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 10 && y + dir.getDy() < 15f)) {
 				return false;
 			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() < 8) && (y + dir.getDy() >= 9.5 && y + dir.getDy() < 12)) {
 				return false;
 			} else if((x + dir.getDx() >= 1.5f && x + dir.getDx() < 5.5f) && (y + dir.getDy() >= 9.5 && y + dir.getDy() < 11)) {
 				return false;
-			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 8 && y + dir.getDy() < 9.5f)) {
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 8 && y + dir.getDy() < 11)) {
 				return false;
 			}
 
@@ -278,6 +278,126 @@ public class Actor {
 				return false;
 			}
 
+		} else if(mapName == "CaveState") {
+			// Collision Wall
+			if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 9 && y + dir.getDy() <= 12.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 0.5f && x + dir.getDx() <= 2.5f) && (y + dir.getDy() >= 8.5f && y + dir.getDy() < 9)) {
+				return false;
+			} else if((x + dir.getDx() > 0.5f && x + dir.getDx() < 1.5f) && (y + dir.getDy() >= 10 && y + dir.getDy() <= 12.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 1 && x + dir.getDx() < 2) && (y + dir.getDy() > 9.5f && y + dir.getDy() <= 10)) {
+				return false;
+			} else if((x + dir.getDx() >= 1 && x + dir.getDx() < 2.5f) && (y + dir.getDy() > 9.5f && y + dir.getDy() <= 13)) {
+				return false;
+			} else if((x + dir.getDx() > 2.5f && x + dir.getDx() <= 3) && (y + dir.getDy() >= 9 && y + dir.getDy() <= 12)) {
+				return false;
+			} else if((x + dir.getDx() >= 2.5f && x + dir.getDx() <= 5.5f) && (y + dir.getDy() > 13 && y + dir.getDy() <= 13.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 3.5f && x + dir.getDx() <= 5) && (y + dir.getDy() > 11 && y + dir.getDy() < 12.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 5.5f && x + dir.getDx() <= 6) && (y + dir.getDy() >= 8.5f && y + dir.getDy() <= 13)) {
+				return false;
+			} else if((x + dir.getDx() > 4.5f && x + dir.getDx() < 5.5f) && (y + dir.getDy() > 9.5f && y + dir.getDy() <= 12)) {
+				return false;
+			} else if((x + dir.getDx() > 3.5f && x + dir.getDx() < 5) && (y + dir.getDy() > 9.5f && y + dir.getDy() <= 10)) {
+				return false;
+			} else if((x + dir.getDx() >= 3 && x + dir.getDx() < 4) && (y + dir.getDy() > 8 && y + dir.getDy() <= 9.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 4.5f && x + dir.getDx() <= 5.5f) && (y + dir.getDy() > 7.5f && y + dir.getDy() <= 8)) {
+				return false;
+			} else if((x + dir.getDx() > 4 && x + dir.getDx() <= 5) && (y + dir.getDy() >= 7 && y + dir.getDy() <= 7.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 6.5f && y + dir.getDy() <= 8)) {
+				return false;
+			} else if((x + dir.getDx() >= 0.5f && x + dir.getDx() <= 1) && (y + dir.getDy() >= 5.5f && y + dir.getDy() < 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 1.5f && x + dir.getDx() <= 2.5f) && (y + dir.getDy() >= 6 && y + dir.getDy() <= 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 2.5f && x + dir.getDx() <= 4) && (y + dir.getDy() >= 6 && y + dir.getDy() < 7)) {
+				return false;
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 1.5f) && (y + dir.getDy() > 4 && y + dir.getDy() < 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 1.5f && x + dir.getDx() < 2.5f) && (y + dir.getDy() > 4 && y + dir.getDy() < 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 0 && x + dir.getDx() < 0.5f) && (y + dir.getDy() >= 1 && y + dir.getDy() <= 4)) {
+				return false;
+			} else if((x + dir.getDx() >= 2 && x + dir.getDx() <= 2.5f) && (y + dir.getDy() > 4 && y + dir.getDy() < 5)) {
+				return false;
+			} else if((x + dir.getDx() >= 0.5f && x + dir.getDx() <= 2.5f) && (y + dir.getDy() > 0 && y + dir.getDy() < 1)) {
+				return false;
+			} else if((x + dir.getDx() > 2.5f && x + dir.getDx() <= 3) && (y + dir.getDy() >= 1.5f && y + dir.getDy() <= 4)) {
+				return false;
+			} else if((x + dir.getDx() > 2.5f && x + dir.getDx() <= 4.5f) && (y + dir.getDy() >= 0 && y + dir.getDy() <= 0.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 2.5f && x + dir.getDx() <= 4.5f) && (y + dir.getDy() > 1 && y + dir.getDy() <= 2)) {
+				return false;
+			} else if((x + dir.getDx() >= 5 && x + dir.getDx() <= 8) && (y + dir.getDy() > 0 && y + dir.getDy() < 1)) {
+				return false;
+			} else if((x + dir.getDx() >= 5 && x + dir.getDx() <= 5.5f) && (y + dir.getDy() > 1.5f && y + dir.getDy() < 2.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6 && x + dir.getDx() <= 7.5f) && (y + dir.getDy() > 2 && y + dir.getDy() <= 2.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() <= 8) && (y + dir.getDy() > 3.5f && y + dir.getDy() <= 4)) {
+				return false;
+			} else if((x + dir.getDx() > 5 && x + dir.getDx() < 6) && (y + dir.getDy() >= 3 && y + dir.getDy() <= 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() < 7) && (y + dir.getDy() >= 4 && y + dir.getDy() <= 5.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6 && x + dir.getDx() <= 8) && (y + dir.getDy() > 6.5f && y + dir.getDy() <= 7)) {
+				return false;
+			} else if((x + dir.getDx() > 8 && x + dir.getDx() <= 9) && (y + dir.getDy() >= 1 && y + dir.getDy() <= 3.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() <= 7.5f) && (y + dir.getDy() >= 5 && y + dir.getDy() < 6)) {
+				return false;
+			} else if((x + dir.getDx() >= 7 && x + dir.getDx() < 8) && (y + dir.getDy() >= 4.5f && y + dir.getDy() < 5.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 8 && x + dir.getDx() <= 9.5f) && (y + dir.getDy() >= 5 && y + dir.getDy() <= 6.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 10 && x + dir.getDx() <= 11) && (y + dir.getDy() > 5 && y + dir.getDy() <= 5.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 11 && x + dir.getDx() <= 12.5f) && (y + dir.getDy() > 4 && y + dir.getDy() <= 5)) {
+				return false;
+			} else if((x + dir.getDx() >= 9 && x + dir.getDx() < 10) && (y + dir.getDy() > 2.5f && y + dir.getDy() <= 4)) {
+				return false;
+			} else if((x + dir.getDx() >= 10 && x + dir.getDx() <= 11) && (y + dir.getDy() > 2 && y + dir.getDy() < 3)) {
+				return false;
+			} else if((x + dir.getDx() >= 11.5f && x + dir.getDx() <= 16) && (y + dir.getDy() > 4 && y + dir.getDy() <= 4.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 11 && x + dir.getDx() <= 13) && (y + dir.getDy() >= 2 && y + dir.getDy() < 3)) {
+				return false;
+			} else if((x + dir.getDx() >= 12 && x + dir.getDx() <= 17.5f) && (y + dir.getDy() >= 2 && y + dir.getDy() < 3.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 17 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 3.5f && y + dir.getDy() <= 7)) {
+				return false;
+			} else if((x + dir.getDx() >= 15 && x + dir.getDx() < 17) && (y + dir.getDy() >= 4.5f && y + dir.getDy() <= 7)) {
+				return false;
+			} else if((x + dir.getDx() >= 15 && x + dir.getDx() < 17) && (y + dir.getDy() >= 7.5f && y + dir.getDy() <= 8.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 17 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 7.5f && y + dir.getDy() <= 8.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 7 && x + dir.getDx() <= 16) && (y + dir.getDy() >= 8 && y + dir.getDy() < 9)) {
+				return false;
+			} else if((x + dir.getDx() >= 6.5f && x + dir.getDx() < 7) && (y + dir.getDy() >= 9 && y + dir.getDy() <= 13.5f)) {
+				return false;
+			} else if((x + dir.getDx() >= 9 && x + dir.getDx() < 7) && (y + dir.getDy() >= 9 && y + dir.getDy() <= 13.5f)) {
+				return false;
+			} else if((x + dir.getDx() > 18 && x + dir.getDx() <= 19.5f) && (y + dir.getDy() >= 9 && y + dir.getDy() <= 13.5f)) {
+				return false;
+			}
+			
+			// Collision Lava
+			if((x + dir.getDx() > 11.5f && x + dir.getDx() < 17.5f) && (y + dir.getDy() >= 12.5f && y + dir.getDy() <= 13.5f)) {
+				return false;
+			} else if(x + dir.getDx() == 11 && y + dir.getDy() == 11.5f) {
+				return false;
+			}
+			
+			// Collsion Tent
+			if((x + dir.getDx() >= 0.5f && x + dir.getDx() < 1.5f) && (y + dir.getDy() == 7.5f)) {
+				return false;
+			}
+			
 		}
 
 		if (x + dir.getDx() >= Gdx.graphics.getWidth() / 32 || x + dir.getDx() < 0

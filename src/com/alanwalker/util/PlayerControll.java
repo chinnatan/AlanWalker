@@ -16,16 +16,16 @@ public class PlayerControll implements InputProcessor{
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if(keycode == Keys.UP) {
+		if(keycode == Keys.W) {
 			up = true;
 		}
-		if(keycode == Keys.DOWN) {
+		if(keycode == Keys.S) {
 			down = true;
 		}
-		if(keycode == Keys.LEFT) {
+		if(keycode == Keys.A) {
 			left = true;
 		}
-		if(keycode == Keys.RIGHT) {
+		if(keycode == Keys.D) {
 			right = true;
 		}
 		
@@ -34,16 +34,16 @@ public class PlayerControll implements InputProcessor{
 
 	@Override
 	public boolean keyUp(int keycode) {
-		if(keycode == Keys.UP) {
+		if(keycode == Keys.W) {
 			up = false;
 		}
-		if(keycode == Keys.DOWN) {
+		if(keycode == Keys.S) {
 			down = false;
 		}
-		if(keycode == Keys.LEFT) {
+		if(keycode == Keys.A) {
 			left = false;
 		}
-		if(keycode == Keys.RIGHT) {
+		if(keycode == Keys.D) {
 			right = false;
 		}
 		

@@ -124,7 +124,7 @@ public class QuestTalk2State extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+				aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
 			}
 		});
 		

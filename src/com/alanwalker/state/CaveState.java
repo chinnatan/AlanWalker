@@ -18,9 +18,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -29,8 +29,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class VillageState extends AbstractState {
-
+public class CaveState extends AbstractState{
+	
 	private AbstractState screen;
 	private Actor player;
 	private PlayerControll playerControll;
@@ -41,9 +41,15 @@ public class VillageState extends AbstractState {
 	private AnimationSet animationAlan;
 	private Texture alanHud;
 
-	protected Rectangle monsterSpawn, actor, nurse, toJungle;
-	private double positionMonsterX;
-	private double positionMonsterY;
+	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcQuest;
+	private double positionMonster1X;
+	private double positionMonster1Y;
+	private double positionMonster2X;
+	private double positionMonster2Y;
+	
+	// Move Map
+	private Rectangle toJungle;
+	private Rectangle toJungleToCave;
 
 	// Status Player
 	private String level;
@@ -58,8 +64,10 @@ public class VillageState extends AbstractState {
 	private Stage stage;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
-
-	public VillageState(AlanWalker aw, float positionX, float positionY) {
+	private Label countQuestLabel;
+	private Label.LabelStyle countQuestStyle;
+	
+	public CaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
 
@@ -86,30 +94,39 @@ public class VillageState extends AbstractState {
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
+		countQuestStyle = new Label.LabelStyle();
+		countQuestStyle.font = skin.getFont("default");
 
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 		
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
-		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerHPLabel.setColor(Color.WHITE);
 		playerHPLabel.setFontScale(1f, 1f);
 		playerLevelLabel = new Label("Level : " + level, playerLevelStyle);
-		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		playerLevelLabel.setColor(Color.WHITE);
 		playerLevelLabel.setFontScale(1f, 1f);
 		playerExpLabel = new Label("Exp : " + exp, playerExpStyle);
-		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 10, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
+		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10", countQuestStyle);
+		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+		countQuestLabel.setColor(Color.WHITE);
+		countQuestLabel.setFontScale(1f, 1f);
 		
-		stage.addActor(playerHPLabel);
-		stage.addActor(playerLevelLabel);
-		stage.addActor(playerExpLabel);
+//		stage.addActor(playerHPLabel);
+//		stage.addActor(playerLevelLabel);
+//		stage.addActor(playerExpLabel);
+//		stage.addActor(countQuestLabel);
 
-		positionMonsterX = Math.random() * 10 + 1;
-		positionMonsterY = Math.random() * 3 + 1;
+		positionMonster1X = Math.random() * 8 + 8;
+		positionMonster1Y = Math.random() * 4 + 9;
+		positionMonster2X = Math.random() * 8 + 8;
+		positionMonster2Y = Math.random() * 2 + 6;
 		
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
@@ -125,7 +142,7 @@ public class VillageState extends AbstractState {
 				alanAtlas.findRegion("alan_stand_east"), alanAtlas.findRegion("alan_stand_west"));
 
 		// Load Map Village
-		map = new TmxMapLoader().load("resource/maps/village/village.tmx");
+		map = new TmxMapLoader().load("resource/maps/cave/cave.tmx");
 
 		// Render Map Village
 		mapRender = new OrthogonalTiledMapRenderer(map);
@@ -134,9 +151,9 @@ public class VillageState extends AbstractState {
 		camera = new OrthographicCamera();
 
 		// Load Player
-		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "VillageState");
+		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "CaveState");
 
-		// Load Player Controll
+		// Load Player Control
 		playerControll = new PlayerControll(player);
 
 		// Input Movement
@@ -152,69 +169,108 @@ public class VillageState extends AbstractState {
 
 	@Override
 	public void hide() {
-
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
 
+	public void update(float delta) {
+		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10");
+		playerLevelLabel.setText("Level : " + level);
 	}
 	
 	@Override
 	public void render(float delta) {
-
+		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		nurse = new Rectangle(12, 7, 1, 1);
-		toJungle = new Rectangle(10.5f, 0, 1, 1);
-//		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
-//		monsterSpawn = new Rectangle(11, 1, 0, 0);
+		update(delta);
+		
+		if(loadPlayer.getProp().getProperty("Quest2").equals("start")) {
+			countQuestLabel.setVisible(true);
+		} else {
+			countQuestLabel.setVisible(false);
+		}
+		
+		npcQuest = new Rectangle(7.5f, 8, 1, 1);
+		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
+		toJungleToCave = new Rectangle(0.5f, 13.5f, 0.5f, 0.5f);
+		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
+		monsterSpawn2 = new Rectangle(8, 6.5f, 8, 2);
 
-		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
+		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
 		playerControll.update(delta);
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
-		// if(camera.position.x > Settings.V_WIDTH) {
-		// camera.position.x = Settings.V_WIDTH;
-		// } else if(camera.position.x < Settings.V_WIDTH / 2) {
-		// camera.position.x = Settings.V_WIDTH / 2;
-		// }
-		if (camera.position.y > Settings.V_HEIGHT) {
-			camera.position.y = Settings.V_HEIGHT;
-		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
-			camera.position.y = Settings.V_HEIGHT / 4;
-		}
+		 if(camera.position.x > Settings.V_WIDTH) {
+		 camera.position.x = Settings.V_WIDTH;
+		 } else if(camera.position.x < Settings.V_WIDTH / 2) {
+		 camera.position.x = Settings.V_WIDTH / 2;
+		 }
+//		if (camera.position.y > Settings.V_HEIGHT) {
+//			camera.position.y = Settings.V_HEIGHT;
+//		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
+//			camera.position.y = Settings.V_HEIGHT / 4;
+//		}
 
 		camera.update();
 		
-		// Press "C" to talk Nurse in nearby
-		if (actor.overlaps(nurse)) {
-			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				screen = new NurseState(aw, player.getX(), player.getY());
+		// Press "C" to talk NPC in nearby
+		if (actor.overlaps(npcQuest)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+				screen = new QuestTalk2State(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}
 		
-		// to Jungle map
-		if (actor.overlaps(toJungle)) {
-			try {
-				loadPlayer.getProp().setProperty("mapName", "JungleState");
-				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			screen = new JungleState(aw, 6.5f, 12);
-			aw.setScreen(screen);
-		}
+		// Move Map
+//		if (actor.overlaps(toJungle)) { // -- to Jungle Map -- //
+//			try {
+//				loadPlayer.getProp().setProperty("mapName", "JungleState");
+//				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			screen = new JungleState(aw, 0.5f, 9);
+//			aw.setScreen(screen);
+//		} else if (actor.overlaps(toJungleToCave)) { // -- to Jungle To Cave Map -- //
+//			try {
+//				loadPlayer.getProp().setProperty("mapName", "JungleToCaveState");
+//				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			screen = new JungleToCaveState(aw, 1, 9);
+//			aw.setScreen(screen);
+//		}
+		
+//		System.out.println("X 1 : " + positionMonster1X);
+//		System.out.println("Y 1 : " + positionMonster1Y);
+//		System.out.println("X 2 : " + positionMonster2X);
+//		System.out.println("Y 2 : " + positionMonster2Y);
 		
 		// Detection Monster in map
-//		if (actor.overlaps(monsterSpawn)) {
-//			screen = new BattleState(aw, "VillageState", player.getX(), player.getY());
-//			aw.setScreen(screen);
+//		if (actor.overlaps(monsterSpawn1)) {
+//			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+//				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
+//				aw.setScreen(screen);
+//			}
+//		} else if (actor.overlaps(monsterSpawn2)) {
+//			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+//				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
+//				aw.setScreen(screen);
+//			}
 //		}
 		
 		mapRender.setView(camera);
@@ -223,10 +279,11 @@ public class VillageState extends AbstractState {
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
-		sb.draw(alanHud, 0, 380, 300, 100);
+//		sb.draw(alanHud, 0, 380, 300, 100);
 		sb.end();
 		stage.act();
 		stage.draw();
+		
 	}
 
 	@Override
@@ -237,11 +294,13 @@ public class VillageState extends AbstractState {
 
 	@Override
 	public void resume() {
-
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void show() {
+		// TODO Auto-generated method stub
 		
 	}
 

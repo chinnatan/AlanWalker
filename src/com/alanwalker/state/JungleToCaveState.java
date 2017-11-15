@@ -49,6 +49,7 @@ public class JungleToCaveState extends AbstractState{
 	
 	// Move Map
 	private Rectangle toJungle;
+	private Rectangle toCave;
 
 	// Status Player
 	private String level;
@@ -199,6 +200,7 @@ public class JungleToCaveState extends AbstractState{
 		
 		npcQuest = new Rectangle(7.5f, 8, 1, 1);
 		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
+		toCave = new Rectangle(1, 10, 0.5f, 05.f);
 		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
 		monsterSpawn2 = new Rectangle(8, 6.5f, 8, 2);
 
@@ -222,7 +224,7 @@ public class JungleToCaveState extends AbstractState{
 		
 		// Press "C" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
-			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 				screen = new QuestTalk2State(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
@@ -240,12 +242,23 @@ public class JungleToCaveState extends AbstractState{
 			}
 			screen = new JungleState(aw, 0.5f, 9);
 			aw.setScreen(screen);
+		} else if(actor.overlaps(toCave)) {
+			try {
+				loadPlayer.getProp().setProperty("mapName", "CaveState");
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			screen = new CaveState(aw, 0.5f, 12.5f);
+			aw.setScreen(screen);
 		}
 		
-		System.out.println("X 1 : " + positionMonster1X);
-		System.out.println("Y 1 : " + positionMonster1Y);
-		System.out.println("X 2 : " + positionMonster2X);
-		System.out.println("Y 2 : " + positionMonster2Y);
+//		System.out.println("X 1 : " + positionMonster1X);
+//		System.out.println("Y 1 : " + positionMonster1Y);
+//		System.out.println("X 2 : " + positionMonster2X);
+//		System.out.println("Y 2 : " + positionMonster2Y);
 		
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn1)) {
