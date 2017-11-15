@@ -92,15 +92,15 @@ public class VillageState extends AbstractState {
 		
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
-		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerHPLabel.setColor(Color.WHITE);
 		playerHPLabel.setFontScale(1f, 1f);
 		playerLevelLabel = new Label("Level : " + level, playerLevelStyle);
-		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		playerLevelLabel.setColor(Color.WHITE);
 		playerLevelLabel.setFontScale(1f, 1f);
 		playerExpLabel = new Label("Exp : " + exp, playerExpStyle);
-		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 10, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
 		
@@ -159,7 +159,7 @@ public class VillageState extends AbstractState {
 	public void pause() {
 
 	}
-	
+
 	@Override
 	public void render(float delta) {
 
@@ -223,7 +223,17 @@ public class VillageState extends AbstractState {
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
-		sb.draw(alanHud, 0, 380, 300, 100);
+		if((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
+			sb.draw(alanHud, 340, 380, 300, 100);
+			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 2 + 195, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		} else {
+			sb.draw(alanHud, 0, 380, 300, 100);
+			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		}
 		sb.end();
 		stage.act();
 		stage.draw();
