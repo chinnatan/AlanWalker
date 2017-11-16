@@ -2,11 +2,11 @@ package com.alanwalker.state;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,40 +18,48 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class MenuState extends AbstractState{
-	
+public class MenuState extends AbstractState {
+
 	private AbstractState screen;
 	private SpriteBatch sb;
 	private Texture bg;
 	private Skin skin;
 	private Stage stage;
 	private float positionPlayerX, positionPlayerY;
+	private Sound sound;
 	private LoadSave loadPlayer;
-	
+
 	// Button
 	private TextButton continueButton;
 	private TextButton newGameButton;
-	
+
 	public MenuState(AlanWalker aw) {
 		super(aw);
 
 		sb = new SpriteBatch();
-		
+
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/Menu-Lost-Child-(instrument-IU).mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
+
 		// New Game or Load File Save
 		loadPlayer = new LoadSave();
 		positionPlayerX = Float.valueOf(loadPlayer.getStartX());
 		positionPlayerY = Float.valueOf(loadPlayer.getStartY());
-		
+
 		// Load Button TextureAtlas
 		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
-		
+
 		// Create a font
 		BitmapFont font = new BitmapFont();
-		
+
 		// Load Button UI
 		skin = new Skin(startButtonAtlas);
 		skin.add("default", font);
-		
+
 		// Create a button style
 		TextButton.TextButtonStyle newGameButtonStyle = new TextButton.TextButtonStyle();
 		TextButton.TextButtonStyle tutorialButtonStyle = new TextButton.TextButtonStyle();
@@ -73,26 +81,28 @@ public class MenuState extends AbstractState{
 		continueButtonStyle.over = skin.newDrawable("continue-over");
 		continueButtonStyle.down = skin.newDrawable("continue-clicked");
 		continueButtonStyle.font = skin.getFont("default");
-		
+
 		bg = new Texture(Gdx.files.internal("resource/backgrounds/menubg-2.gif"));
 
 		stage = new Stage();
-        Gdx.input.setInputProcessor(stage);// Make the stage consume events
+		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 
-        newGameButton = new TextButton("", newGameButtonStyle); // Use the initialized skin
-        newGameButton.setPosition(Gdx.graphics.getWidth()/2 - Gdx.graphics.getWidth()/6 , Gdx.graphics.getHeight()/2);
-        newGameButton.addListener(new ClickListener() {
+		newGameButton = new TextButton("", newGameButtonStyle); // Use the initialized skin
+		newGameButton.setPosition(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 6,
+				Gdx.graphics.getHeight() / 2);
+		newGameButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				screen = new StoryState(aw);
-//				screen = new CaveState(aw, 8, 10);
+				// screen = new CaveState(aw, 8, 10);
 				aw.setScreen(screen);
 			}
 		});
-        
-        continueButton = new TextButton("", continueButtonStyle); // Use the initialized skin
-        continueButton.setPosition(Gdx.graphics.getWidth()/2 - Gdx.graphics.getWidth()/6 , Gdx.graphics.getHeight()/2);
-        continueButton.addListener(new ClickListener() {
+
+		continueButton = new TextButton("", continueButtonStyle); // Use the initialized skin
+		continueButton.setPosition(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 6,
+				Gdx.graphics.getHeight() / 2);
+		continueButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
@@ -106,49 +116,52 @@ public class MenuState extends AbstractState{
 				}
 			}
 		});
-        
-        TextButton tutorialButton = new TextButton("", tutorialButtonStyle); // Use the initialized skin
-        tutorialButton.setPosition(Gdx.graphics.getWidth()/2 - Gdx.graphics.getWidth()/6 , Gdx.graphics.getHeight()/2.6f);
-        
-        TextButton exitButton = new TextButton("", exitButtonStyle); // Use the initialized skin
-        exitButton.setPosition(Gdx.graphics.getWidth()/2 - Gdx.graphics.getWidth()/6 , Gdx.graphics.getHeight()/3.7f);
+
+		TextButton tutorialButton = new TextButton("", tutorialButtonStyle); // Use the initialized skin
+		tutorialButton.setPosition(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 6,
+				Gdx.graphics.getHeight() / 2.6f);
+
+		TextButton exitButton = new TextButton("", exitButtonStyle); // Use the initialized skin
+		exitButton.setPosition(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 6,
+				Gdx.graphics.getHeight() / 3.7f);
 		exitButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				System.exit(0);
 			}
 		});
-		
-		
+
 		// Add Button in Stage
-        stage.addActor(newGameButton);
-        stage.addActor(continueButton);
-        stage.addActor(tutorialButton);
-        stage.addActor(exitButton);
+		stage.addActor(newGameButton);
+		stage.addActor(continueButton);
+		stage.addActor(tutorialButton);
+		stage.addActor(exitButton);
 	}
 
 	@Override
 	public void dispose() {
-		
+		stage.dispose();
+		sb.dispose();
+		sound.dispose();
 	}
 
 	@Override
 	public void hide() {
-		
+
 	}
 
 	@Override
 	public void pause() {
-		
+
 	}
 
 	@Override
 	public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
-        try {
-			if(new FileInputStream("saves/save.properties") != null) {
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		try {
+			if (new FileInputStream("saves/save.properties") != null) {
 				newGameButton.setVisible(false);
 				continueButton.setVisible(true);
 			} else {
@@ -159,28 +172,28 @@ public class MenuState extends AbstractState{
 			e.printStackTrace();
 		}
 
-        sb.begin();
-        sb.draw(bg, 0, 0, Settings.V_WIDTH, Settings.V_HEIGHT);
-        sb.end();
-        
-        // Show Button Stage
-        stage.act();
-        stage.draw();
+		sb.begin();
+		sb.draw(bg, 0, 0, Settings.V_WIDTH, Settings.V_HEIGHT);
+		sb.end();
+
+		// Show Button Stage
+		stage.act();
+		stage.draw();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		
+
 	}
 
 	@Override
 	public void resume() {
-		
+
 	}
 
 	@Override
 	public void show() {
-		
+
 	}
 
 }
