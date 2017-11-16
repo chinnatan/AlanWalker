@@ -1,5 +1,8 @@
 package com.alanwalker.state;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.LoadSave;
@@ -22,12 +25,22 @@ public class MenuState extends AbstractState{
 	private Texture bg;
 	private Skin skin;
 	private Stage stage;
-	private LoadSave load;
+	private float positionPlayerX, positionPlayerY;
+	private LoadSave loadPlayer;
+	
+	// Button
+	private TextButton continueButton;
+	private TextButton newGameButton;
 	
 	public MenuState(AlanWalker aw) {
 		super(aw);
 
 		sb = new SpriteBatch();
+		
+		// New Game or Load File Save
+		loadPlayer = new LoadSave();
+		positionPlayerX = Float.valueOf(loadPlayer.getStartX());
+		positionPlayerY = Float.valueOf(loadPlayer.getStartY());
 		
 		// Load Button TextureAtlas
 		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
@@ -43,7 +56,7 @@ public class MenuState extends AbstractState{
 		TextButton.TextButtonStyle newGameButtonStyle = new TextButton.TextButtonStyle();
 		TextButton.TextButtonStyle tutorialButtonStyle = new TextButton.TextButtonStyle();
 		TextButton.TextButtonStyle exitButtonStyle = new TextButton.TextButtonStyle();
-//		TextButton.TextButtonStyle continueButtonStyle = new TextButton.TextButtonStyle();
+		TextButton.TextButtonStyle continueButtonStyle = new TextButton.TextButtonStyle();
 		newGameButtonStyle.up = skin.newDrawable("new-game-active");
 		newGameButtonStyle.over = skin.newDrawable("new-game-over");
 		newGameButtonStyle.down = skin.newDrawable("new-game-clicked");
@@ -56,20 +69,41 @@ public class MenuState extends AbstractState{
 		exitButtonStyle.over = skin.newDrawable("exit-over");
 		exitButtonStyle.down = skin.newDrawable("exit-clicked");
 		exitButtonStyle.font = skin.getFont("default");
+		continueButtonStyle.up = skin.newDrawable("continue-active");
+		continueButtonStyle.over = skin.newDrawable("continue-over");
+		continueButtonStyle.down = skin.newDrawable("continue-clicked");
+		continueButtonStyle.font = skin.getFont("default");
 		
 		bg = new Texture(Gdx.files.internal("resource/backgrounds/menubg-2.gif"));
 
 		stage = new Stage();
         Gdx.input.setInputProcessor(stage);// Make the stage consume events
 
-        TextButton newGameButton = new TextButton("", newGameButtonStyle); // Use the initialized skin
+        newGameButton = new TextButton("", newGameButtonStyle); // Use the initialized skin
         newGameButton.setPosition(Gdx.graphics.getWidth()/2 - Gdx.graphics.getWidth()/6 , Gdx.graphics.getHeight()/2);
         newGameButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-//				screen = new StoryState(aw);
-				screen = new CaveState(aw, 8, 10);
+				screen = new StoryState(aw);
+//				screen = new CaveState(aw, 8, 10);
 				aw.setScreen(screen);
+			}
+		});
+        
+        continueButton = new TextButton("", continueButtonStyle); // Use the initialized skin
+        continueButton.setPosition(Gdx.graphics.getWidth()/2 - Gdx.graphics.getWidth()/6 , Gdx.graphics.getHeight()/2);
+        continueButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
+					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
+					aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("CaveState")) {
+					aw.setScreen(new CaveState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
+					aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
+				}
 			}
 		});
         
@@ -88,6 +122,7 @@ public class MenuState extends AbstractState{
 		
 		// Add Button in Stage
         stage.addActor(newGameButton);
+        stage.addActor(continueButton);
         stage.addActor(tutorialButton);
         stage.addActor(exitButton);
 	}
@@ -111,6 +146,18 @@ public class MenuState extends AbstractState{
 	public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
+        try {
+			if(new FileInputStream("saves/save.properties") != null) {
+				newGameButton.setVisible(false);
+				continueButton.setVisible(true);
+			} else {
+				newGameButton.setVisible(true);
+				continueButton.setVisible(false);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
         sb.begin();
         sb.draw(bg, 0, 0, Settings.V_WIDTH, Settings.V_HEIGHT);
@@ -133,8 +180,7 @@ public class MenuState extends AbstractState{
 
 	@Override
 	public void show() {
-		// New Game or Load File Save
-		load = new LoadSave();
+		
 	}
 
 }

@@ -6,154 +6,182 @@ filter: Nearest,Nearest
 repeat: none
 attack-active
   rotate: false
-  xy: 2, 374
+  xy: 2, 436
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 attack-clicked
   rotate: false
-  xy: 2, 312
+  xy: 2, 374
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 attack-disable
   rotate: false
-  xy: 204, 374
+  xy: 204, 436
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 attack-over
   rotate: false
-  xy: 2, 250
+  xy: 2, 312
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 continue-active
   rotate: false
-  xy: 204, 312
+  xy: 204, 374
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 continue-clicked
   rotate: false
-  xy: 406, 374
+  xy: 406, 436
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 continue-over
   rotate: false
-  xy: 2, 188
+  xy: 2, 250
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 exit-active
   rotate: false
-  xy: 204, 250
+  xy: 204, 312
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 exit-clicked
   rotate: false
-  xy: 406, 312
+  xy: 406, 374
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 exit-over
   rotate: false
-  xy: 608, 374
+  xy: 608, 436
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 new-game-active
   rotate: false
-  xy: 2, 126
+  xy: 2, 188
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 new-game-clicked
   rotate: false
-  xy: 204, 188
+  xy: 204, 250
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 new-game-over
   rotate: false
-  xy: 406, 250
+  xy: 406, 312
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 no-active
   rotate: false
-  xy: 608, 312
+  xy: 608, 374
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 no-clicked
   rotate: false
-  xy: 810, 374
+  xy: 810, 436
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 no-over
   rotate: false
-  xy: 2, 64
+  xy: 2, 126
+  size: 200, 60
+  orig: 200, 60
+  offset: 0, 0
+  index: -1
+run-active
+  rotate: false
+  xy: 204, 188
+  size: 200, 60
+  orig: 200, 60
+  offset: 0, 0
+  index: -1
+run-clicked
+  rotate: false
+  xy: 406, 250
+  size: 200, 60
+  orig: 200, 60
+  offset: 0, 0
+  index: -1
+run-disable
+  rotate: false
+  xy: 608, 312
+  size: 200, 60
+  orig: 200, 60
+  offset: 0, 0
+  index: -1
+run-over
+  rotate: false
+  xy: 810, 374
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 tutorial-active
   rotate: false
-  xy: 204, 126
+  xy: 2, 64
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 tutorial-clicked
   rotate: false
-  xy: 406, 188
+  xy: 204, 126
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 tutorial-over
   rotate: false
-  xy: 608, 250
+  xy: 406, 188
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 yes-active
   rotate: false
-  xy: 810, 312
+  xy: 608, 250
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 yes-clicked
   rotate: false
-  xy: 2, 2
+  xy: 810, 312
   size: 200, 60
   orig: 200, 60
   offset: 0, 0
   index: -1
 yes-over
   rotate: false
-  xy: 204, 64
+  xy: 2, 2
   size: 200, 60
   orig: 200, 60
   offset: 0, 0

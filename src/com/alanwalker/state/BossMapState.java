@@ -48,8 +48,7 @@ public class BossMapState extends AbstractState{
 	private double positionMonster2Y;
 	
 	// Move Map
-	private Rectangle toBossMap;
-	private Rectangle toJungleToCave;
+	private Rectangle toCave;
 
 	// Status Player
 	private String level;
@@ -192,10 +191,7 @@ public class BossMapState extends AbstractState{
 		}
 		
 		npcQuest = new Rectangle(7.5f, 8, 1, 1);
-		toBossMap = new Rectangle(7.5f, 14.5f, 1, 0.5f);
-		toJungleToCave = new Rectangle(0.5f, 13.5f, 0.5f, 0.5f);
-		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
-		monsterSpawn2 = new Rectangle(8, 6.5f, 8, 2);
+		toCave = new Rectangle(4, 0, 1.5f, 1);
 
 		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
 		playerControll.update(delta);
@@ -215,36 +211,25 @@ public class BossMapState extends AbstractState{
 
 		camera.update();
 		
-		// Press "C" to talk NPC in nearby
+		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
-			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 				screen = new QuestTalk2State(aw, player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}
 		
 		// Move Map
-		if (actor.overlaps(toBossMap)) { // -- to Boss Map -- //
+		if (actor.overlaps(toCave)) { // -- to Cave Map -- //
 			try {
-				loadPlayer.getProp().setProperty("mapName", "BossMapState");
+				loadPlayer.getProp().setProperty("mapName", "CaveState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			screen = new BossMapState(aw, 0.5f, 9);
-			aw.setScreen(screen);
-		} else if (actor.overlaps(toJungleToCave)) { // -- to Jungle To Cave Map -- //
-			try {
-				loadPlayer.getProp().setProperty("mapName", "JungleToCaveState");
-				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			screen = new JungleToCaveState(aw, 1, 9);
+			screen = new CaveState(aw, 8, 13);
 			aw.setScreen(screen);
 		}
 		

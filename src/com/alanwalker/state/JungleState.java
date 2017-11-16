@@ -42,8 +42,12 @@ public class JungleState extends AbstractState {
 	private Texture alanHud;
 
 	private Rectangle monsterSpawn, actor, npcQuest;
-	private double positionMonsterX;
-	private double positionMonsterY;
+	
+	// Random Position Monster Spawn
+	private double positionMonster1X;
+	private double positionMonster1Y;
+	private double positionMonster2X;
+	private double positionMonster2Y;
 	
 	// Move Map
 	private Rectangle toVillage;
@@ -122,8 +126,10 @@ public class JungleState extends AbstractState {
 		stage.addActor(countQuestLabel);
 
 		// Respawn Monster in Map
-		positionMonsterX = Math.random() * 6 + 1;
-		positionMonsterY = Math.random() * 3 + 2;
+		positionMonster1X = Math.random() * 6 + 1;
+		positionMonster1Y = Math.random() * 3 + 2;
+		positionMonster2X = Math.random() * 6 + 1;
+		positionMonster2Y = Math.random() * 3 + 2;
 		
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
@@ -250,10 +256,15 @@ public class JungleState extends AbstractState {
 		}
 
 		// Detection Monster in map
-		if (actor.overlaps(monsterSpawn)) {
-			if((int) positionMonsterX == player.getX() && (int) positionMonsterY == player.getY()) {
-				screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
-				aw.setScreen(screen);
+		if (loadPlayer.getProp().getProperty("Quest1CountMonster") != null) {
+			if (actor.overlaps(monsterSpawn)) {
+				if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+					screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
+					aw.setScreen(screen);
+				} else if ((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+					screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
+					aw.setScreen(screen);
+				}
 			}
 		}
 		

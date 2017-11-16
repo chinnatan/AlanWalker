@@ -40,15 +40,13 @@ public class BattleState extends AbstractState {
 	private Stage stage;
 	private Label monsterHpLabel, playerHpLabel, playerTurnLabel;
 	private Label.LabelStyle monsterHPStyle, playerHPStyle, playerTurnStyle;
-	private TextButton attackButton;
 	private Texture dialogueBox, alanCharacter;
 	private boolean youTurn = true, monTurn;
-	private int flagTurnShowLabel;
 	private float delayTime = 0, delayTimeAttack = 0;
-
-	private Properties prop = new Properties();
-	private InputStream input = null;
-	private OutputStream output = null;
+	
+	// Button in State
+	private TextButton attackBtn;
+	private TextButton runBtn;
 
 	// Player Status
 	private int playerHp;
@@ -98,12 +96,19 @@ public class BattleState extends AbstractState {
 		skin.add("default", font);
 
 		// Create a button style
-		TextButton.TextButtonStyle attackButtonStyle = new TextButton.TextButtonStyle();
-		attackButtonStyle.up = skin.newDrawable("attack-active");
-		attackButtonStyle.over = skin.newDrawable("attack-over");
-		attackButtonStyle.down = skin.newDrawable("attack-clicked");
-		attackButtonStyle.disabled = skin.newDrawable("attack-disable");
-		attackButtonStyle.font = skin.getFont("default");
+		TextButton.TextButtonStyle attackBtnStyle = new TextButton.TextButtonStyle();
+		attackBtnStyle.up = skin.newDrawable("attack-active");
+		attackBtnStyle.over = skin.newDrawable("attack-over");
+		attackBtnStyle.down = skin.newDrawable("attack-clicked");
+		attackBtnStyle.disabled = skin.newDrawable("attack-disable");
+		attackBtnStyle.font = skin.getFont("default");
+		TextButton.TextButtonStyle runBtnStyle = new TextButton.TextButtonStyle();
+		runBtnStyle.up = skin.newDrawable("run-active");
+		runBtnStyle.over = skin.newDrawable("run-over");
+		runBtnStyle.down = skin.newDrawable("run-clicked");
+		runBtnStyle.disabled = skin.newDrawable("run-disable");
+		runBtnStyle.font = skin.getFont("default");
+		
 
 		// Create a label style
 		monsterHPStyle = new Label.LabelStyle();
@@ -116,9 +121,9 @@ public class BattleState extends AbstractState {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 
-		attackButton = new TextButton("", attackButtonStyle); // Use the initialized skin
-		attackButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 7);
-		attackButton.addListener(new ClickListener() {
+		attackBtn = new TextButton("", attackBtnStyle); // Use the initialized skin
+		attackBtn.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 7);
+		attackBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				delayTimeAttack = 0;
@@ -149,10 +154,33 @@ public class BattleState extends AbstractState {
 					}
 					if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
 						aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+					} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
+						aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
+					} else if (loadPlayer.getProp().getProperty("mapName").equals("CaveState")) {
+						aw.setScreen(new CaveState(aw, positionPlayerX, positionPlayerY));
+					} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
+						aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
 					}
 				}
 				youTurn = false;
 				monTurn = true;
+			}
+		});
+		
+		runBtn = new TextButton("", runBtnStyle); // Use the initialized skin
+		runBtn.setPosition(Gdx.graphics.getWidth() / 2 + 80, Gdx.graphics.getHeight() / 7);
+		runBtn.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
+					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
+					aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("CaveState")) {
+					aw.setScreen(new CaveState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
+					aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
+				}
 			}
 		});
 
@@ -172,10 +200,14 @@ public class BattleState extends AbstractState {
 		playerTurnLabel.setColor(Color.WHITE);
 		playerTurnLabel.setFontScale(2f, 2f);
 		playerTurnLabel.setText("Your Turn !!");
-		attackButton.setTouchable(Touchable.disabled);
-		attackButton.setDisabled(true);
+		
+		attackBtn.setTouchable(Touchable.disabled);
+		attackBtn.setDisabled(true);
+		runBtn.setTouchable(Touchable.disabled);
+		runBtn.setDisabled(true);
 
-		stage.addActor(attackButton);
+		stage.addActor(attackBtn);
+		stage.addActor(runBtn);
 		stage.addActor(monsterHpLabel);
 		stage.addActor(playerHpLabel);
 		stage.addActor(playerTurnLabel);
@@ -223,8 +255,12 @@ public class BattleState extends AbstractState {
 
 		if (delayTime > 3) {
 			playerTurnLabel.setText("");
-			attackButton.setTouchable(Touchable.enabled);
-			attackButton.setDisabled(false);
+			
+			attackBtn.setTouchable(Touchable.enabled);
+			attackBtn.setDisabled(false);
+			runBtn.setTouchable(Touchable.enabled);
+			runBtn.setDisabled(false);
+			
 			delayTime = 0;
 		} else {
 			delayTime += delta;
@@ -232,8 +268,8 @@ public class BattleState extends AbstractState {
 
 		// Check Player Turn
 		if (youTurn == false) {
-			attackButton.setTouchable(Touchable.disabled);
-			attackButton.setDisabled(true);
+			attackBtn.setTouchable(Touchable.disabled);
+			attackBtn.setDisabled(true);
 		}
 
 		// Update All Text on Screen
@@ -247,7 +283,7 @@ public class BattleState extends AbstractState {
 			if (delayTimeAttack > 3) {
 				delayTime = 0;
 				if (monsterAttack == 0) {
-					attackButton.setTouchable(Touchable.enabled);
+					attackBtn.setTouchable(Touchable.enabled);
 					youTurn = true;
 					monTurn = false;
 					playerTurnLabel.setText("Miss !!");
@@ -266,7 +302,7 @@ public class BattleState extends AbstractState {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					attackButton.setTouchable(Touchable.enabled);
+					attackBtn.setTouchable(Touchable.enabled);
 					youTurn = true;
 					monTurn = false;
 					playerTurnLabel.setText("Your Turn !!");
