@@ -362,7 +362,7 @@ public class JungleState extends AbstractState {
 			}
 			screen = new VillageState(aw, 11, 1.5f);
 			aw.setScreen(screen);
-		} else if (actor.overlaps(toCave)) { // -- to Cave Map -- //
+		} else if (actor.overlaps(toCave)) { // -- to JungleToCave Map -- //
 			try {
 				loadPlayer.getProp().setProperty("mapName", "JungleToCaveState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);

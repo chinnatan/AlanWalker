@@ -234,7 +234,7 @@ public class CaveState extends AbstractState{
 		// Move Map
 		if (actor.overlaps(toBossMap)) { // -- to Boss Map -- //
 			try {
-				loadPlayer.getProp().setProperty("mapName", "JungleState");
+				loadPlayer.getProp().setProperty("mapName", "BossMapState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
