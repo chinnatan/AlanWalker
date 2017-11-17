@@ -5,12 +5,12 @@ import com.alanwalker.entities.DIRECTION;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 
-public class PlayerControll implements InputProcessor{
+public class PlayerControl implements InputProcessor{
 
 	private Actor player;
 	private boolean up, down, left, right;
 	
-	public PlayerControll(Actor player) {
+	public PlayerControl(Actor player) {
 		this.player = player;
 	}
 

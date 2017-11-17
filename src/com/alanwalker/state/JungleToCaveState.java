@@ -5,11 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.alanwalker.entities.Actor;
+import com.alanwalker.entities.DIRECTION;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
 import com.alanwalker.util.LoadSave;
-import com.alanwalker.util.PlayerControll;
+import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -25,15 +26,18 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class JungleToCaveState extends AbstractState{
 	
 	private AbstractState screen;
 	private Actor player;
-	private PlayerControll playerControll;
+	private PlayerControl playerControll;
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer mapRender;
 	private OrthographicCamera camera;
@@ -60,12 +64,15 @@ public class JungleToCaveState extends AbstractState{
 	private LoadSave loadPlayer;
 	
 	// HUD
-	private Skin skin;
-	private Stage stage;
+	private Skin skin, skinQuest;
+	private Stage stage, stageQuest;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
-	private Label countQuestLabel;
-	private Label.LabelStyle countQuestStyle;
+	private Label nurseLabel;
+	private Label.LabelStyle nurseStyle;
+	private TextButton yesButton, noButton;
+	private Texture dialogueBox;
+	private boolean npcCheck = false;
 	
 	public JungleToCaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
@@ -80,12 +87,21 @@ public class JungleToCaveState extends AbstractState{
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
 		
+		// Load Dialoguebox UI
+		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
+		
+		// Load Button TextureAtlas
+		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
+		
 		// Create a font
 		BitmapFont font = new BitmapFont();
+		BitmapFont fontQuest = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
 
 		// Load Button UI
 		skin = new Skin();
 		skin.add("default", font);
+		skinQuest = new Skin(startButtonAtlas);
+		skinQuest.add("default", fontQuest);
 		
 		// Create a label style
 		playerHPStyle = new Label.LabelStyle();
@@ -94,11 +110,23 @@ public class JungleToCaveState extends AbstractState{
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
-		countQuestStyle = new Label.LabelStyle();
-		countQuestStyle.font = skin.getFont("default");
+		nurseStyle = new Label.LabelStyle();
+		nurseStyle.font = skinQuest.getFont("default");
+
+		// Create a button style
+		TextButton.TextButtonStyle yesButtonStyle = new TextButton.TextButtonStyle();
+		yesButtonStyle.up = skinQuest.newDrawable("yes-active");
+		yesButtonStyle.over = skinQuest.newDrawable("yes-over");
+		yesButtonStyle.down = skinQuest.newDrawable("yes-clicked");
+		yesButtonStyle.font = skinQuest.getFont("default");
+
+		TextButton.TextButtonStyle noButtonStyle = new TextButton.TextButtonStyle();
+		noButtonStyle.up = skinQuest.newDrawable("no-active");
+		noButtonStyle.over = skinQuest.newDrawable("no-over");
+		noButtonStyle.down = skinQuest.newDrawable("no-clicked");
+		noButtonStyle.font = skinQuest.getFont("default");
 
 		stage = new Stage();
-		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 		
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
@@ -113,15 +141,58 @@ public class JungleToCaveState extends AbstractState{
 		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
-		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10", countQuestStyle);
-		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
-		countQuestLabel.setColor(Color.WHITE);
-		countQuestLabel.setFontScale(1f, 1f);
+		
+		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
+		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
+		yesButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				playerHP = Integer.toString(100);
+				try {
+					loadPlayer.getProp().setProperty("hp", playerHP);
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				aw.setScreen(new JungleToCaveState(aw, player.getX(), player.getY()));
+			}
+		});
+
+		noButton = new TextButton("", noButtonStyle); // Use the initialized skin
+		noButton.setPosition(Gdx.graphics.getWidth() / 2 + 70, Gdx.graphics.getHeight() / 16);
+		noButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				try {
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				aw.setScreen(new JungleToCaveState(aw, player.getX(), player.getY()));
+			}
+		});
+		
+		
+		// HUD Nurse
+		nurseLabel = new Label("คุณต้องการเพิ่ม hp หรือไม่", nurseStyle);
+		nurseLabel.setBounds(Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 5, 10, 10);
+		nurseLabel.setColor(Color.WHITE);
+		nurseLabel.setFontScale(1f, 1f);
 		
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
-		stage.addActor(countQuestLabel);
+		stage.addActor(yesButton);
+		stage.addActor(noButton);
+		stage.addActor(nurseLabel);
+		
+		yesButton.setVisible(false);
+		noButton.setVisible(false);
+		nurseLabel.setVisible(false);
 
 		positionMonster1X = Math.random() * 8 + 8;
 		positionMonster1Y = Math.random() * 4 + 9;
@@ -134,6 +205,7 @@ public class JungleToCaveState extends AbstractState{
 		// Load Alan Character
 		TextureAtlas alanAtlas = aw.getAssetManager().get("resource/character/alan/alan.atlas", TextureAtlas.class);
 		animationAlan = new AnimationSet(
+				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_stand_north"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_north"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_south"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_east"), PlayMode.LOOP_PINGPONG),
@@ -154,7 +226,7 @@ public class JungleToCaveState extends AbstractState{
 		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "JungleToCaveState");
 
 		// Load Player Controll
-		playerControll = new PlayerControll(player);
+		playerControll = new PlayerControl(player);
 
 		// Input Movement
 		Gdx.input.setInputProcessor(playerControll);
@@ -180,7 +252,6 @@ public class JungleToCaveState extends AbstractState{
 	}
 
 	public void update(float delta) {
-		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10");
 		playerLevelLabel.setText("Level : " + level);
 	}
 	
@@ -191,12 +262,6 @@ public class JungleToCaveState extends AbstractState{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		update(delta);
-		
-		if(loadPlayer.getProp().getProperty("Quest2").equals("start")) {
-			countQuestLabel.setVisible(true);
-		} else {
-			countQuestLabel.setVisible(false);
-		}
 		
 		npcNurse = new Rectangle(7.5f, 8, 1, 1);
 		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
@@ -222,11 +287,14 @@ public class JungleToCaveState extends AbstractState{
 
 		camera.update();
 		
-		// Press "C" to talk NPC in nearby
+		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcNurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				screen = new NurseState(aw, player.getX(), player.getY(), "JungleToCaveState");
-				aw.setScreen(screen);
+				npcCheck = true;
+				Gdx.input.setInputProcessor(stage);
+				yesButton.setVisible(true);
+				noButton.setVisible(true);
+				nurseLabel.setVisible(true);
 			}
 		}
 		
@@ -255,11 +323,6 @@ public class JungleToCaveState extends AbstractState{
 			aw.setScreen(screen);
 		}
 		
-//		System.out.println("X 1 : " + positionMonster1X);
-//		System.out.println("Y 1 : " + positionMonster1Y);
-//		System.out.println("X 2 : " + positionMonster2X);
-//		System.out.println("Y 2 : " + positionMonster2Y);
-		
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn1)) {
 			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
@@ -276,6 +339,12 @@ public class JungleToCaveState extends AbstractState{
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		// Show Chat Box
+		if (npcCheck) {
+			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
+			player.initMove(DIRECTION.STAND);
+		}
+		
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
@@ -284,13 +353,11 @@ public class JungleToCaveState extends AbstractState{
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 2 + 195, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
-			countQuestLabel.setBounds(Gdx.graphics.getWidth() / 2 + 195, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		} else {
 			sb.draw(alanHud, 0, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
-			countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		}
 		sb.end();
 		stage.act();

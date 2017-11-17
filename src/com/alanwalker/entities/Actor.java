@@ -490,7 +490,7 @@ public class Actor {
 			return animationPlayer.getStanding(facing);
 		}
 
-		return animationPlayer.getStanding(DIRECTION.SOUTH);
+		return animationPlayer.getStanding(facing);
 	}
 
 	public int getPlayerHP() {

@@ -49,8 +49,6 @@ public class LoadSave {
 				prop.setProperty("Quest1CountMonster", "null");
 				prop.setProperty("Quest2", "null");
 				prop.setProperty("Quest2CountMonster", "null");
-				prop.setProperty("Quest3", "null");
-				prop.setProperty("Quest3CountMonster", "null");
 				// save properties to project root folder
 				prop.store(outputSave, null);
 			} catch (IOException io) {

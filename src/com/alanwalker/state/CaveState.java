@@ -9,7 +9,7 @@ import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
 import com.alanwalker.util.LoadSave;
-import com.alanwalker.util.PlayerControll;
+import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -33,7 +33,7 @@ public class CaveState extends AbstractState{
 	
 	private AbstractState screen;
 	private Actor player;
-	private PlayerControll playerControll;
+	private PlayerControl playerControll;
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer mapRender;
 	private OrthographicCamera camera;
@@ -134,6 +134,7 @@ public class CaveState extends AbstractState{
 		// Load Alan Character
 		TextureAtlas alanAtlas = aw.getAssetManager().get("resource/character/alan/alan.atlas", TextureAtlas.class);
 		animationAlan = new AnimationSet(
+				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_stand_north"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_north"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_south"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_east"), PlayMode.LOOP_PINGPONG),
@@ -154,7 +155,7 @@ public class CaveState extends AbstractState{
 		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "CaveState");
 
 		// Load Player Control
-		playerControll = new PlayerControll(player);
+		playerControll = new PlayerControl(player);
 
 		// Input Movement
 		Gdx.input.setInputProcessor(playerControll);

@@ -6,6 +6,7 @@ public enum DIRECTION {
 	SOUTH(0, -0.5f),
 	EAST(0.5f, 0),
 	WEST(-0.5f, 0),
+	STAND(0, 0),
 	;
 	
 	private float dx, dy;

@@ -105,7 +105,9 @@ public class MenuState extends AbstractState {
 		continueButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
+				if (loadPlayer.getProp().getProperty("mapName").equals("VillageState")) {
+					aw.setScreen(new VillageState(aw, positionPlayerX, positionPlayerY));
+				} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
 					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
 				} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
 					aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
@@ -114,6 +116,7 @@ public class MenuState extends AbstractState {
 				} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
 					aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
 				}
+				sound.stop();
 			}
 		});
 

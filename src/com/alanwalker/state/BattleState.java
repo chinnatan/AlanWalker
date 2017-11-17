@@ -352,7 +352,7 @@ public class BattleState extends AbstractState {
 		monsterExp = monster.getMonsterExp();
 		if (monsterName == "JungleState") {
 			countMonster = Integer.parseInt(loadPlayer.getProp().getProperty("Quest1CountMonster"));
-		} else if (monsterName == "JungleToCaveState") {
+		} else if (monsterName == "CaveState") {
 			countMonster = Integer.parseInt(loadPlayer.getProp().getProperty("Quest2CountMonster"));
 		}
 	}

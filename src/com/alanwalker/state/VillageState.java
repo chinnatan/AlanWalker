@@ -5,11 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.alanwalker.entities.Actor;
+import com.alanwalker.entities.DIRECTION;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
 import com.alanwalker.util.LoadSave;
-import com.alanwalker.util.PlayerControll;
+import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -25,15 +26,18 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class VillageState extends AbstractState {
 
 	private AbstractState screen;
 	private Actor player;
-	private PlayerControll playerControll;
+	private PlayerControl playerControll;
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer mapRender;
 	private OrthographicCamera camera;
@@ -52,12 +56,17 @@ public class VillageState extends AbstractState {
 	private String playerHP;
 	private float positionPlayerX, positionPlayerY;
 	private LoadSave loadPlayer;
-	
+
 	// HUD
-	private Skin skin;
-	private Stage stage;
+	private Skin skin, skinQuest;
+	private Stage stage, stageQuest;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
+	private Label nurseLabel;
+	private Label.LabelStyle nurseStyle;
+	private TextButton yesButton, noButton;
+	private Texture dialogueBox;
+	private boolean npcCheck = false;
 
 	public VillageState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
@@ -71,14 +80,23 @@ public class VillageState extends AbstractState {
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
-		
+
+		// Load Dialoguebox UI
+		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
+
+		// Load Button TextureAtlas
+		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
+
 		// Create a font
 		BitmapFont font = new BitmapFont();
+		BitmapFont fontQuest = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
 
 		// Load Button UI
 		skin = new Skin();
 		skin.add("default", font);
-		
+		skinQuest = new Skin(startButtonAtlas);
+		skinQuest.add("default", fontQuest);
+
 		// Create a label style
 		playerHPStyle = new Label.LabelStyle();
 		playerHPStyle.font = skin.getFont("default");
@@ -86,10 +104,24 @@ public class VillageState extends AbstractState {
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
+		nurseStyle = new Label.LabelStyle();
+		nurseStyle.font = skinQuest.getFont("default");
+
+		// Create a button style
+		TextButton.TextButtonStyle yesButtonStyle = new TextButton.TextButtonStyle();
+		yesButtonStyle.up = skinQuest.newDrawable("yes-active");
+		yesButtonStyle.over = skinQuest.newDrawable("yes-over");
+		yesButtonStyle.down = skinQuest.newDrawable("yes-clicked");
+		yesButtonStyle.font = skinQuest.getFont("default");
+
+		TextButton.TextButtonStyle noButtonStyle = new TextButton.TextButtonStyle();
+		noButtonStyle.up = skinQuest.newDrawable("no-active");
+		noButtonStyle.over = skinQuest.newDrawable("no-over");
+		noButtonStyle.down = skinQuest.newDrawable("no-clicked");
+		noButtonStyle.font = skinQuest.getFont("default");
 
 		stage = new Stage();
-		Gdx.input.setInputProcessor(stage);// Make the stage consume events
-		
+
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
 		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
@@ -104,19 +136,67 @@ public class VillageState extends AbstractState {
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
 		
+		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
+		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
+		yesButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				playerHP = Integer.toString(100);
+				try {
+					loadPlayer.getProp().setProperty("hp", playerHP);
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
+			}
+		});
+
+		noButton = new TextButton("", noButtonStyle); // Use the initialized skin
+		noButton.setPosition(Gdx.graphics.getWidth() / 2 + 70, Gdx.graphics.getHeight() / 16);
+		noButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				try {
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
+			}
+		});
+
+		// HUD Nurse
+		nurseLabel = new Label("คุณต้องการเพิ่ม hp หรือไม่", nurseStyle);
+		nurseLabel.setBounds(Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 5, 10, 10);
+		nurseLabel.setColor(Color.WHITE);
+		nurseLabel.setFontScale(1f, 1f);
+
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
+		stage.addActor(yesButton);
+		stage.addActor(noButton);
+		stage.addActor(nurseLabel);
+		
+		yesButton.setVisible(false);
+		noButton.setVisible(false);
+		nurseLabel.setVisible(false);
 
 		positionMonsterX = Math.random() * 10 + 1;
 		positionMonsterY = Math.random() * 3 + 1;
-		
+
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
 
 		// Load Alan Character
 		TextureAtlas alanAtlas = aw.getAssetManager().get("resource/character/alan/alan.atlas", TextureAtlas.class);
 		animationAlan = new AnimationSet(
+				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_stand_north"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_north"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_south"), PlayMode.LOOP_PINGPONG),
 				new Animation(0.3f / 2f, alanAtlas.findRegions("alan_walk_east"), PlayMode.LOOP_PINGPONG),
@@ -137,7 +217,7 @@ public class VillageState extends AbstractState {
 		player = new Actor(positionPlayerX, positionPlayerY, animationAlan, "VillageState");
 
 		// Load Player Controll
-		playerControll = new PlayerControll(player);
+		playerControll = new PlayerControl(player);
 
 		// Input Movement
 		Gdx.input.setInputProcessor(playerControll);
@@ -165,11 +245,9 @@ public class VillageState extends AbstractState {
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		npcNurse = new Rectangle(12, 7, 1, 1);
 		toJungle = new Rectangle(10.5f, 0, 1, 1);
-//		monsterSpawn = new Rectangle((int) positionMonsterX, (int) positionMonsterY, 0, 0);
-//		monsterSpawn = new Rectangle(11, 1, 0, 0);
 
 		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
 		playerControll.update(delta);
@@ -188,15 +266,18 @@ public class VillageState extends AbstractState {
 		}
 
 		camera.update();
-		
-		// Press "C" to talk Nurse in nearby
+
+		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcNurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				screen = new NurseState(aw, player.getX(), player.getY(), "VillageState");
-				aw.setScreen(screen);
+				npcCheck = true;
+				Gdx.input.setInputProcessor(stage);
+				yesButton.setVisible(true);
+				noButton.setVisible(true);
+				nurseLabel.setVisible(true);
 			}
 		}
-		
+
 		// to Jungle map
 		if (actor.overlaps(toJungle)) {
 			try {
@@ -210,20 +291,20 @@ public class VillageState extends AbstractState {
 			screen = new JungleState(aw, 6.5f, 12);
 			aw.setScreen(screen);
 		}
-		
-		// Detection Monster in map
-//		if (actor.overlaps(monsterSpawn)) {
-//			screen = new BattleState(aw, "VillageState", player.getX(), player.getY());
-//			aw.setScreen(screen);
-//		}
-		
+
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		// Show Chat Box
+		if (npcCheck) {
+			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
+			player.initMove(DIRECTION.STAND);
+		}
+		
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
-		if((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
+		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
@@ -252,7 +333,7 @@ public class VillageState extends AbstractState {
 
 	@Override
 	public void show() {
-		
+
 	}
 
 }
