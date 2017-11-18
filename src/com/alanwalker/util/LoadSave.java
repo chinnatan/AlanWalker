@@ -68,7 +68,7 @@ public class LoadSave {
 	}
 
 	public String getAttack() {
-		attack = Integer.toString((int) (Math.random() * 10 + (Math.pow(Integer.parseInt(level), Integer.parseInt(level)))) * Integer.parseInt(level));
+		attack = Integer.toString((int) (Math.random() * 10 + (Math.pow(Integer.parseInt(level), Integer.parseInt(level)))));
 		return attack;
 	}
 

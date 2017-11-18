@@ -3,6 +3,7 @@ package com.alanwalker.state;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import com.alanwalker.entities.Actor;
 import com.alanwalker.entities.DIRECTION;
@@ -47,11 +48,18 @@ public class CaveState extends AbstractState{
 	private Texture alanHud;
 	private Sound sound;
 
-	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcQuest;
+	private Rectangle actor, npcQuest;
+	
+	// Monster System
+	private Rectangle monsterSpawn1;
+	private Rectangle monsterSpawn2;
+	private Rectangle monsterSpawn3;
 	private double positionMonster1X;
 	private double positionMonster1Y;
 	private double positionMonster2X;
 	private double positionMonster2Y;
+	private double positionMonster3X;
+	private double positionMonster3Y;
 	
 	// Move Map
 	private Rectangle toBossMap;
@@ -83,6 +91,15 @@ public class CaveState extends AbstractState{
 	public CaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
+		
+		// Respawn Monster in Map
+		Random rand = new Random();
+		positionMonster1X = rand.nextInt(11) + 7;
+		positionMonster1Y = rand.nextInt(3) + 9;
+		positionMonster2X = rand.nextInt(11) + 7;
+		positionMonster2Y = rand.nextInt(3) + 9;
+		positionMonster3X = rand.nextInt(4) + 7;
+		positionMonster3Y = rand.nextInt(2) + 11;
 
 		// Load data player
 		loadPlayer = new LoadSave();
@@ -188,7 +205,7 @@ public class CaveState extends AbstractState{
 
 				if (loadPlayer.getProp().getProperty("Quest2").equals("start")
 						&& loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5")) {
-					aw.setScreen(new BattleState(aw, "JungleBoss", player.getX(), player.getY()));
+					aw.setScreen(new BattleState(aw, "CaveBoss", player.getX(), player.getY()));
 				}
 				sound.stop();
 			}
@@ -309,8 +326,9 @@ public class CaveState extends AbstractState{
 		npcQuest = new Rectangle(1.5f, 7.5f, 1, 1);
 		toBossMap = new Rectangle(7.5f, 14.5f, 1, 0.5f);
 		toJungleToCave = new Rectangle(0.5f, 13.5f, 0.5f, 0.5f);
-		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
-		monsterSpawn2 = new Rectangle(8, 6.5f, 8, 2);
+		monsterSpawn1 = new Rectangle(7, 9, 11, 5);
+		monsterSpawn2 = new Rectangle(7, 9, 11, 5);
+		monsterSpawn3 = new Rectangle(7, 12, 4.5f, 1);
 
 		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
 		playerControll.update(delta);
@@ -401,23 +419,23 @@ public class CaveState extends AbstractState{
 			aw.setScreen(screen);
 		}
 		
-//		System.out.println("X 1 : " + positionMonster1X);
-//		System.out.println("Y 1 : " + positionMonster1Y);
-//		System.out.println("X 2 : " + positionMonster2X);
-//		System.out.println("Y 2 : " + positionMonster2Y);
-		
 		// Detection Monster in map
-//		if (actor.overlaps(monsterSpawn1)) {
-//			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
-//				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
-//				aw.setScreen(screen);
-//			}
-//		} else if (actor.overlaps(monsterSpawn2)) {
-//			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
-//				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
-//				aw.setScreen(screen);
-//			}
-//		}
+		if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
+			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
+				aw.setScreen(screen);
+			}
+		} else if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
+			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
+				aw.setScreen(screen);
+			}
+		} else if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
+			if((int) positionMonster3X == player.getX() && (int) positionMonster3Y == player.getY()) {
+				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
+				aw.setScreen(screen);
+			}
+		}
 		
 		mapRender.setView(camera);
 		mapRender.render();

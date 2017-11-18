@@ -452,6 +452,12 @@ public class Actor {
 			} else if ((x + dir.getDx() == 8.5f)
 					&& (y + dir.getDy() >= 4 && y + dir.getDy() < 4.5f)) {
 				return false;
+			} else if ((x + dir.getDx() >= 8.5f && x + dir.getDx() <= 18)
+					&& (y + dir.getDy() > 14 && y + dir.getDy() <= 14.5f)) {
+				return false;
+			} else if ((x + dir.getDx() > 18 && x + dir.getDx() <= 19)
+					&& (y + dir.getDy() == 14)) {
+				return false;
 			}
 
 			// Collision Lava

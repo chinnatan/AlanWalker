@@ -79,7 +79,7 @@ public class BattleState extends AbstractState {
 		playerLevel = Integer.parseInt(loadPlayer.getLevel());
 		playerHp = Integer.parseInt(loadPlayer.getPlayerHP());
 		playerExp = Integer.parseInt(loadPlayer.getExp());
-		playerAttack = Integer.parseInt(loadPlayer.getAttack()) * playerLevel;
+		playerAttack = Integer.parseInt(loadPlayer.getAttack());
 		positionPlayerX = oldX;
 		positionPlayerY = oldY;
 
@@ -141,6 +141,14 @@ public class BattleState extends AbstractState {
 			public void clicked(InputEvent event, float x, float y) {
 				delayTimeAttack = 0;
 				monsterHp -= playerAttack;
+				try {
+					loadPlayer.getProp().setProperty("attack", String.valueOf(playerAttack));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				if (monsterHp <= 0) {
 					playerExp += monsterExp;
 					
@@ -305,7 +313,7 @@ public class BattleState extends AbstractState {
 	@Override
 	public void render(float delta) {
 
-		System.out.println(countMonster);
+		System.out.println(playerAttack);
 
 		// Clear Screen
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -372,6 +380,7 @@ public class BattleState extends AbstractState {
 				if (playerHp <= 0) {
 					try {
 						loadPlayer.getProp().setProperty("hp", "50");
+						loadPlayer.getProp().setProperty("mapName", "VillageState");
 						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -399,7 +408,7 @@ public class BattleState extends AbstractState {
 		}
 		
 		sb.draw(alanCharacter, 40, 130, 75, 137);
-		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 200, 130);
+		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 180, 130, 150, 150);
 		sb.draw(alanHud, -80, 0, 320, 143);
 		sb.draw(monsterHud, Gdx.graphics.getWidth() / 2 + 210, 250, 79, 35);
 		sb.end();
