@@ -36,14 +36,12 @@ public class BattleState extends AbstractState {
 	private Monster monster;
 	private Actor player;
 	private SpriteBatch sb;
-	private Skin skin;
-	private Stage stage;
 	private Label monsterHpLabel, playerHpLabel, playerTurnLabel;
-	private Label.LabelStyle monsterHPStyle, playerHPStyle, playerTurnStyle;
-	private Texture dialogueBox, alanCharacter;
+	private Label.LabelStyle monsterHPStyle, playerTurnStyle;
+	private Texture alanHud, alanCharacter, bgStage, monsterHud, alanHudTop;
 	private boolean youTurn = true, monTurn;
 	private float delayTime = 0, delayTimeAttack = 0;
-	
+
 	// Button in State
 	private TextButton attackBtn;
 	private TextButton runBtn;
@@ -62,6 +60,12 @@ public class BattleState extends AbstractState {
 	private int monsterExp;
 	private int countMonster;
 	private String monsterName;
+	
+	// HUD
+	private Skin skin;
+	private Stage stage;
+	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
+	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
 
 	public BattleState(AlanWalker aw, String monster, float oldX, float oldY) {
 		super(aw);
@@ -79,11 +83,17 @@ public class BattleState extends AbstractState {
 		positionPlayerX = oldX;
 		positionPlayerY = oldY;
 
+		// Load Background Stage
+		bgStage = new Texture(Gdx.files.internal("resource/backgrounds/battlestage.png"));
+
 		// Load Alan Character
 		alanCharacter = new Texture(Gdx.files.internal("resource/character/alan/alan-battle.png"));
 
-		// Load Dialoguebox UI
-		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
+		// Load Alan HUD
+		alanHud = new Texture(Gdx.files.internal("resource/hud/hud-alan-battlestage.png"));
+
+		// Load Monster HUD
+		monsterHud = new Texture(Gdx.files.internal("resource/hud/hud-monster-battlestage.png"));
 
 		// Load Button TextureAtlas
 		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
@@ -108,21 +118,24 @@ public class BattleState extends AbstractState {
 		runBtnStyle.down = skin.newDrawable("run-clicked");
 		runBtnStyle.disabled = skin.newDrawable("run-disable");
 		runBtnStyle.font = skin.getFont("default");
-		
 
 		// Create a label style
 		monsterHPStyle = new Label.LabelStyle();
 		monsterHPStyle.font = skin.getFont("default");
-		playerHPStyle = new Label.LabelStyle();
-		playerHPStyle.font = skin.getFont("default");
 		playerTurnStyle = new Label.LabelStyle();
 		playerTurnStyle.font = skin.getFont("default");
+		playerHPStyle = new Label.LabelStyle();
+		playerHPStyle.font = skin.getFont("default");
+		playerLevelStyle = new Label.LabelStyle();
+		playerLevelStyle.font = skin.getFont("default");
+		playerExpStyle = new Label.LabelStyle();
+		playerExpStyle.font = skin.getFont("default");
 
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 
 		attackBtn = new TextButton("", attackBtnStyle); // Use the initialized skin
-		attackBtn.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 7);
+		attackBtn.setPosition(Gdx.graphics.getWidth() / 45, Gdx.graphics.getHeight() / 7);
 		attackBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -130,6 +143,8 @@ public class BattleState extends AbstractState {
 				monsterHp -= playerAttack;
 				if (monsterHp <= 0) {
 					playerExp += monsterExp;
+					
+					// Kill BossMap Complete
 					if (monster == "JungleBoss") {
 						try {
 							loadPlayer.getProp().setProperty("Quest1", "end");
@@ -139,19 +154,45 @@ public class BattleState extends AbstractState {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
+					} else if(monster == "CaveBoss") {
+						try {
+							loadPlayer.getProp().setProperty("Quest2", "end");
+							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
-					if (!(loadPlayer.getProp().getProperty("Quest1CountMonster").equals("10"))) {
+					// Kill BossMap Complete (END)
+					
+					// Save Amount Monster Kill in Quest
+					if (!(loadPlayer.getProp().getProperty("Quest1CountMonster").equals("5")) && loadPlayer.getProp().getProperty("Quest1").equals("start")) {
 						countMonster++;
+						try {
+							loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
+							loadPlayer.getProp().setProperty("Quest1CountMonster", Integer.toString(countMonster));
+							loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+							loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} else if (!(loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5")) && loadPlayer.getProp().getProperty("Quest2").equals("start")) {
+						countMonster++;
+						try {
+							loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
+							loadPlayer.getProp().setProperty("Quest2CountMonster", Integer.toString(countMonster));
+							loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+							loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
-					try {
-						loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
-						loadPlayer.getProp().setProperty("Quest1CountMonster", Integer.toString(countMonster));
-						loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
-						loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
-						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					// Save Amount Monster Kill in Quest (END)
+					
+					// Come Back In Present Map
 					if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
 						aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
 					} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
@@ -161,14 +202,15 @@ public class BattleState extends AbstractState {
 					} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
 						aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
 					}
+					// Come Back In Present Map (END)
 				}
 				youTurn = false;
 				monTurn = true;
 			}
 		});
-		
+
 		runBtn = new TextButton("", runBtnStyle); // Use the initialized skin
-		runBtn.setPosition(Gdx.graphics.getWidth() / 2 + 80, Gdx.graphics.getHeight() / 7);
+		runBtn.setPosition(Gdx.graphics.getWidth() / 45, Gdx.graphics.getHeight() / 35);
 		runBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -183,10 +225,27 @@ public class BattleState extends AbstractState {
 				}
 			}
 		});
+		
+		// Hud Status
+		playerHPLabel = new Label("HP : " + playerHp, playerHPStyle);
+		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerHPLabel.setColor(Color.WHITE);
+		playerHPLabel.setFontScale(1f, 1f);
+		playerLevelLabel = new Label("Level : " + playerLevel, playerLevelStyle);
+		playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+		playerLevelLabel.setColor(Color.WHITE);
+		playerLevelLabel.setFontScale(1f, 1f);
+		playerExpLabel = new Label("Exp : " + playerExp, playerExpStyle);
+		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		playerExpLabel.setColor(Color.WHITE);
+		playerExpLabel.setFontScale(1f, 1f);
+		
+		// Load Alan Hud
+		alanHudTop = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
 
 		// HP Status
 		monsterHpLabel = new Label("", monsterHPStyle);
-		monsterHpLabel.setBounds(Gdx.graphics.getWidth() / 2 + 200, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		monsterHpLabel.setBounds(Gdx.graphics.getWidth() / 2 + 225, Gdx.graphics.getHeight() / 2 + 20, 10, 10);
 		monsterHpLabel.setColor(Color.WHITE);
 		monsterHpLabel.setFontScale(1f, 1f);
 		playerHpLabel = new Label("", playerHPStyle);
@@ -200,7 +259,7 @@ public class BattleState extends AbstractState {
 		playerTurnLabel.setColor(Color.WHITE);
 		playerTurnLabel.setFontScale(2f, 2f);
 		playerTurnLabel.setText("Your Turn !!");
-		
+
 		attackBtn.setTouchable(Touchable.disabled);
 		attackBtn.setDisabled(true);
 		runBtn.setTouchable(Touchable.disabled);
@@ -209,7 +268,9 @@ public class BattleState extends AbstractState {
 		stage.addActor(attackBtn);
 		stage.addActor(runBtn);
 		stage.addActor(monsterHpLabel);
-		stage.addActor(playerHpLabel);
+		stage.addActor(playerHPLabel);
+		stage.addActor(playerLevelLabel);
+		stage.addActor(playerExpLabel);
 		stage.addActor(playerTurnLabel);
 	}
 
@@ -255,12 +316,12 @@ public class BattleState extends AbstractState {
 
 		if (delayTime > 3) {
 			playerTurnLabel.setText("");
-			
+
 			attackBtn.setTouchable(Touchable.enabled);
 			attackBtn.setDisabled(false);
 			runBtn.setTouchable(Touchable.enabled);
 			runBtn.setDisabled(false);
-			
+
 			delayTime = 0;
 		} else {
 			delayTime += delta;
@@ -322,11 +383,25 @@ public class BattleState extends AbstractState {
 				}
 			}
 		}
-
-		sb.draw(alanCharacter, Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 20 - 100);
-		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 100, Gdx.graphics.getHeight() / 2 + 50);
-		sb.draw(dialogueBox, (Gdx.graphics.getWidth() / 60), 0, Gdx.graphics.getWidth() - 20,
-				Gdx.graphics.getHeight() - 320);
+		sb.draw(bgStage, 0, 0, Settings.V_WIDTH, Settings.V_HEIGHT);
+		
+		// Automatic Move HUD ALAN
+		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
+			sb.draw(alanHudTop, 340, 380, 300, 100);
+			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 2 + 195, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		} else {
+			sb.draw(alanHudTop, 0, 380, 300, 100);
+			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
+			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
+		}
+		
+		sb.draw(alanCharacter, 40, 130, 75, 137);
+		sb.draw(monster.getMonster(), Gdx.graphics.getWidth() / 2 + 200, 130);
+		sb.draw(alanHud, -80, 0, 320, 143);
+		sb.draw(monsterHud, Gdx.graphics.getWidth() / 2 + 210, 250, 79, 35);
 		sb.end();
 		stage.act();
 		stage.draw();

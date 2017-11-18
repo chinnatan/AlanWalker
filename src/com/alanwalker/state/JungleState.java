@@ -3,7 +3,6 @@ package com.alanwalker.state;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import com.alanwalker.entities.Actor;
 import com.alanwalker.entities.DIRECTION;
 import com.alanwalker.main.AlanWalker;
@@ -67,7 +66,7 @@ public class JungleState extends AbstractState {
 
 	// HUD
 	private Skin skin, skinQuest;
-	private Stage stage, stageQuest;
+	private Stage stage;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
 	private Label countQuestLabel;
@@ -401,6 +400,8 @@ public class JungleState extends AbstractState {
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
+		
+		// Automatic Move HUD ALAN
 		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
@@ -414,6 +415,7 @@ public class JungleState extends AbstractState {
 			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		}
+		
 		sb.end();
 		stage.act();
 		stage.draw();

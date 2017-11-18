@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.alanwalker.entities.Actor;
+import com.alanwalker.entities.DIRECTION;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
@@ -25,9 +26,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class CaveState extends AbstractState{
 	
@@ -60,12 +64,19 @@ public class CaveState extends AbstractState{
 	private LoadSave loadPlayer;
 	
 	// HUD
-	private Skin skin;
+	private Skin skin, skinQuest;
 	private Stage stage;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
 	private Label countQuestLabel;
 	private Label.LabelStyle countQuestStyle;
+	
+	// Quest System
+	private Texture dialogueBox;
+	private Label npcQuestLabel;
+	private Label.LabelStyle npcQuestStyle;
+	private TextButton yesButton, noButton;
+	private boolean npcCheck = false;
 	
 	public CaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
@@ -80,12 +91,21 @@ public class CaveState extends AbstractState{
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
 		
+		// Load Dialoguebox UI
+		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
+
+		// Load Button TextureAtlas
+		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
+		
 		// Create a font
 		BitmapFont font = new BitmapFont();
+		BitmapFont fontQuest = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
 
 		// Load Button UI
 		skin = new Skin();
 		skin.add("default", font);
+		skinQuest = new Skin(startButtonAtlas);
+		skinQuest.add("default", fontQuest);
 		
 		// Create a label style
 		playerHPStyle = new Label.LabelStyle();
@@ -96,9 +116,23 @@ public class CaveState extends AbstractState{
 		playerExpStyle.font = skin.getFont("default");
 		countQuestStyle = new Label.LabelStyle();
 		countQuestStyle.font = skin.getFont("default");
+		npcQuestStyle = new Label.LabelStyle();
+		npcQuestStyle.font = skinQuest.getFont("default");
+		
+		// Create a button style
+		TextButton.TextButtonStyle yesButtonStyle = new TextButton.TextButtonStyle();
+		yesButtonStyle.up = skinQuest.newDrawable("yes-active");
+		yesButtonStyle.over = skinQuest.newDrawable("yes-over");
+		yesButtonStyle.down = skinQuest.newDrawable("yes-clicked");
+		yesButtonStyle.font = skinQuest.getFont("default");
+
+		TextButton.TextButtonStyle noButtonStyle = new TextButton.TextButtonStyle();
+		noButtonStyle.up = skinQuest.newDrawable("no-active");
+		noButtonStyle.over = skinQuest.newDrawable("no-over");
+		noButtonStyle.down = skinQuest.newDrawable("no-clicked");
+		noButtonStyle.font = skinQuest.getFont("default");
 
 		stage = new Stage();
-		Gdx.input.setInputProcessor(stage);// Make the stage consume events
 		
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
@@ -113,15 +147,77 @@ public class CaveState extends AbstractState{
 		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
-		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10", countQuestStyle);
+		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/5", countQuestStyle);
 		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		countQuestLabel.setColor(Color.WHITE);
 		countQuestLabel.setFontScale(1f, 1f);
 		
+		// HUD Quest
+		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
+		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
+		yesButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (!(loadPlayer.getProp().getProperty("Quest1").equals("end"))) {
+					aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
+				} else {
+					if (loadPlayer.getProp().getProperty("Quest2").equals("start")) {
+						aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
+					} else if (loadPlayer.getProp().getProperty("Quest2").equals("end")) {
+						aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
+					} else {
+						try {
+							loadPlayer.getProp().setProperty("Quest2", "start");
+							loadPlayer.getProp().setProperty("Quest2CountMonster", "0");
+							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
+					}
+				}
+
+				if (loadPlayer.getProp().getProperty("Quest2").equals("start")
+						&& loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5")) {
+					aw.setScreen(new BattleState(aw, "JungleBoss", player.getX(), player.getY()));
+				}
+			}
+		});
+
+		noButton = new TextButton("", noButtonStyle); // Use the initialized skin
+		noButton.setPosition(Gdx.graphics.getWidth() / 2 + 70, Gdx.graphics.getHeight() / 16);
+		noButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				try {
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
+			}
+		});
+		
+		// Label
+		npcQuestLabel = new Label("กำจัด Spider จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?", npcQuestStyle);
+		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 5, 10, 10);
+		npcQuestLabel.setColor(Color.WHITE);
+		npcQuestLabel.setFontScale(1f, 1f);
+		
+		stage.addActor(yesButton);
+		stage.addActor(noButton);
+		stage.addActor(npcQuestLabel);
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
 		stage.addActor(countQuestLabel);
+		
+		yesButton.setVisible(false);
+		noButton.setVisible(false);
+		npcQuestLabel.setVisible(false);
+		
 
 		positionMonster1X = Math.random() * 8 + 8;
 		positionMonster1Y = Math.random() * 4 + 9;
@@ -181,7 +277,7 @@ public class CaveState extends AbstractState{
 	}
 
 	public void update(float delta) {
-		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10");
+		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/5");
 		playerLevelLabel.setText("Level : " + level);
 	}
 	
@@ -199,7 +295,7 @@ public class CaveState extends AbstractState{
 			countQuestLabel.setVisible(false);
 		}
 		
-		npcQuest = new Rectangle(7.5f, 8, 1, 1);
+		npcQuest = new Rectangle(1.5f, 7.5f, 1, 1);
 		toBossMap = new Rectangle(7.5f, 14.5f, 1, 0.5f);
 		toJungleToCave = new Rectangle(0.5f, 13.5f, 0.5f, 0.5f);
 		monsterSpawn1 = new Rectangle(8, 9.5f, 8, 4);
@@ -223,12 +319,46 @@ public class CaveState extends AbstractState{
 
 		camera.update();
 		
-		// Press "C" to talk NPC in nearby
+		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
-			if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-				screen = new QuestTalk2State(aw, player.getX(), player.getY());
-				aw.setScreen(screen);
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				npcCheck = true;
+				Gdx.input.setInputProcessor(stage);
+				yesButton.setVisible(true);
+				noButton.setVisible(true);
+				npcQuestLabel.setVisible(true);
 			}
+		}
+		
+		// Check Quest
+		if (loadPlayer.getProp().getProperty("Quest1").equals("end")) {
+			if (loadPlayer.getProp().getProperty("Quest2").equals("start")) {
+				if (loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5")) {
+					npcQuestLabel.setText("คุณต้องการส่งเควสและสู้กับบอสแมพใช่หรือไม่");
+					npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+					npcQuestLabel.setColor(Color.WHITE);
+					npcQuestLabel.setFontScale(1f, 1f);
+				} else {
+					npcQuestLabel.setText("คุณยังกำจัด Spider ไม่ครบตามจำนวนที่กำหนด");
+					npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+					npcQuestLabel.setColor(Color.WHITE);
+					npcQuestLabel.setFontScale(1f, 1f);
+				}
+			} else if (loadPlayer.getProp().getProperty("Quest2").equals("end")) {
+				npcQuestLabel.setText("คุณผ่านเควสนี้เรียบร้อยแล้ว...กรุณาทำเควสด่านถัดไป");
+				npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+				npcQuestLabel.setColor(Color.WHITE);
+				npcQuestLabel.setFontScale(1f, 1f);
+				yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+				noButton.setVisible(false);
+			}
+		} else {
+			npcQuestLabel.setText("คุณยังไม่ผ่านเควส 1 กรุณาทำเควส 1 ให้เสร็จเรียบร้อย");
+			npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+			npcQuestLabel.setColor(Color.WHITE);
+			npcQuestLabel.setFontScale(1f, 1f);
+			yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+			noButton.setVisible(false);
 		}
 		
 		// Move Map
@@ -277,6 +407,13 @@ public class CaveState extends AbstractState{
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		
+		// Show Chat Box
+		if (npcCheck) {
+			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
+			player.initMove(DIRECTION.STAND);
+		}
+		
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
