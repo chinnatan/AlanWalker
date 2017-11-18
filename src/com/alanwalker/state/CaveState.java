@@ -13,6 +13,7 @@ import com.alanwalker.util.LoadSave;
 import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -44,6 +45,7 @@ public class CaveState extends AbstractState{
 	private SpriteBatch sb;
 	private AnimationSet animationAlan;
 	private Texture alanHud;
+	private Sound sound;
 
 	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcQuest;
 	private double positionMonster1X;
@@ -90,6 +92,13 @@ public class CaveState extends AbstractState{
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
+		
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/CaveSound.mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
 		
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
@@ -181,6 +190,7 @@ public class CaveState extends AbstractState{
 						&& loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5")) {
 					aw.setScreen(new BattleState(aw, "JungleBoss", player.getX(), player.getY()));
 				}
+				sound.stop();
 			}
 		});
 
@@ -196,6 +206,7 @@ public class CaveState extends AbstractState{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
 			}
 		});
@@ -261,12 +272,12 @@ public class CaveState extends AbstractState{
 	public void dispose() {
 		map.dispose();
 		mapRender.dispose();
+		sound.dispose();
 		sb.dispose();
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -343,6 +354,8 @@ public class CaveState extends AbstractState{
 					npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
 					npcQuestLabel.setColor(Color.WHITE);
 					npcQuestLabel.setFontScale(1f, 1f);
+					yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+					noButton.setVisible(false);
 				}
 			} else if (loadPlayer.getProp().getProperty("Quest2").equals("end")) {
 				npcQuestLabel.setText("คุณผ่านเควสนี้เรียบร้อยแล้ว...กรุณาทำเควสด่านถัดไป");
@@ -371,6 +384,7 @@ public class CaveState extends AbstractState{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new BossMapState(aw, 5, 1.5f);
 			aw.setScreen(screen);
 		} else if (actor.overlaps(toJungleToCave)) { // -- to Jungle To Cave Map -- //
@@ -382,6 +396,7 @@ public class CaveState extends AbstractState{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new JungleToCaveState(aw, 1, 9);
 			aw.setScreen(screen);
 		}
