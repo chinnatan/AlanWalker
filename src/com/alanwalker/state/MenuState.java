@@ -85,7 +85,7 @@ public class MenuState extends AbstractState {
 		continueButtonStyle.down = skin.newDrawable("continue-clicked");
 		continueButtonStyle.font = skin.getFont("default");
 
-		bg = new Texture(Gdx.files.internal("resource/backgrounds/menubg-2.gif"));
+		bg = new Texture(Gdx.files.internal("resource/backgrounds/menu.png"));
 
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);// Make the stage consume events
@@ -132,6 +132,13 @@ public class MenuState extends AbstractState {
 		TextButton tutorialButton = new TextButton("", tutorialButtonStyle); // Use the initialized skin
 		tutorialButton.setPosition(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 6,
 				Gdx.graphics.getHeight() / 2.6f);
+		tutorialButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				aw.setScreen(new TutorialState(aw));
+				sound.stop();
+			}
+		});
 
 		TextButton exitButton = new TextButton("", exitButtonStyle); // Use the initialized skin
 		exitButton.setPosition(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 6,
