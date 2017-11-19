@@ -165,6 +165,7 @@ public class BattleState extends AbstractState {
 					if (monster == "JungleBoss") {
 						try {
 							loadPlayer.getProp().setProperty("Quest1", "end");
+							loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
 							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -174,6 +175,7 @@ public class BattleState extends AbstractState {
 					} else if (monster == "CaveBoss") {
 						try {
 							loadPlayer.getProp().setProperty("Quest2", "end");
+							loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
 							loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
