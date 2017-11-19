@@ -2,6 +2,9 @@ package com.alanwalker.state;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.LoadSave;
@@ -93,8 +96,14 @@ public class MenuState extends AbstractState {
 		newGameButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				try {
+					loadPlayer.getProp().setProperty("newgame", "new");
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				sound.stop();
 				screen = new StoryState(aw);
-//				 screen = new CaveState(aw, 8, 10);
 				aw.setScreen(screen);
 			}
 		});
@@ -163,16 +172,12 @@ public class MenuState extends AbstractState {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		try {
-			if (new FileInputStream("saves/save.properties") != null) {
-				newGameButton.setVisible(false);
-				continueButton.setVisible(true);
-			} else {
-				newGameButton.setVisible(true);
-				continueButton.setVisible(false);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		if (loadPlayer.getProp().getProperty("newgame").equals("new")) {
+			newGameButton.setVisible(false);
+			continueButton.setVisible(true);
+		} else {
+			newGameButton.setVisible(true);
+			continueButton.setVisible(false);
 		}
 
 		sb.begin();

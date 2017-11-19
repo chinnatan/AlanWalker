@@ -13,6 +13,7 @@ import com.alanwalker.util.LoadSave;
 import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -44,6 +45,7 @@ public class JungleToCaveState extends AbstractState{
 	private SpriteBatch sb;
 	private AnimationSet animationAlan;
 	private Texture alanHud;
+	private Sound sound;
 
 	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcNurse;
 	private double positionMonster1X;
@@ -86,6 +88,13 @@ public class JungleToCaveState extends AbstractState{
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
+		
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/Village-Jungle.mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
 		
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
@@ -156,6 +165,7 @@ public class JungleToCaveState extends AbstractState{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new JungleToCaveState(aw, player.getX(), player.getY()));
 			}
 		});
@@ -172,6 +182,7 @@ public class JungleToCaveState extends AbstractState{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new JungleToCaveState(aw, player.getX(), player.getY()));
 			}
 		});
@@ -308,6 +319,7 @@ public class JungleToCaveState extends AbstractState{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new JungleState(aw, 0.5f, 9);
 			aw.setScreen(screen);
 		} else if(actor.overlaps(toCave)) {
@@ -319,6 +331,7 @@ public class JungleToCaveState extends AbstractState{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new CaveState(aw, 0.5f, 12.5f);
 			aw.setScreen(screen);
 		}

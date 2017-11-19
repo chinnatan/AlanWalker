@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.alanwalker.entities.Actor;
+import com.alanwalker.entities.DIRECTION;
 import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.AnimationSet;
@@ -26,12 +27,15 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class BossMapState extends AbstractState{
-	
+public class BossMapState extends AbstractState {
+
 	private AbstractState screen;
 	private Actor player;
 	private PlayerControl playerControll;
@@ -43,12 +47,8 @@ public class BossMapState extends AbstractState{
 	private Texture alanHud;
 	private Sound sound;
 
-	protected Rectangle monsterSpawn1, monsterSpawn2, actor, npcQuest;
-	private double positionMonster1X;
-	private double positionMonster1Y;
-	private double positionMonster2X;
-	private double positionMonster2Y;
-	
+	protected Rectangle actor;
+
 	// Move Map
 	private Rectangle toCave;
 
@@ -59,19 +59,25 @@ public class BossMapState extends AbstractState{
 	private String playerHP;
 	private float positionPlayerX, positionPlayerY;
 	private LoadSave loadPlayer;
-	
+
 	// HUD
-	private Skin skin;
+	private Skin skin, skinQuest;
 	private Stage stage;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
-	private Label countQuestLabel;
-	private Label.LabelStyle countQuestStyle;
-	
+
+	// Quest System
+	private Rectangle npcQuest;
+	private Texture dialogueBox;
+	private Label npcQuestLabel;
+	private Label.LabelStyle npcQuestStyle;
+	private TextButton yesButton, noButton;
+	private boolean npcCheck = false;
+
 	public BossMapState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
-		
+
 		// Load Sound
 		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/BossSound.mp3"));
 		long id;
@@ -87,14 +93,23 @@ public class BossMapState extends AbstractState{
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
-		
+
+		// Load Dialoguebox UI
+		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
+
+		// Load Button TextureAtlas
+		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
+
 		// Create a font
 		BitmapFont font = new BitmapFont();
+		BitmapFont fontQuest = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
 
 		// Load Button UI
 		skin = new Skin();
 		skin.add("default", font);
-		
+		skinQuest = new Skin(startButtonAtlas);
+		skinQuest.add("default", fontQuest);
+
 		// Create a label style
 		playerHPStyle = new Label.LabelStyle();
 		playerHPStyle.font = skin.getFont("default");
@@ -102,12 +117,11 @@ public class BossMapState extends AbstractState{
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
-		countQuestStyle = new Label.LabelStyle();
-		countQuestStyle.font = skin.getFont("default");
+		npcQuestStyle = new Label.LabelStyle();
+		npcQuestStyle.font = skinQuest.getFont("default");
 
 		stage = new Stage();
-		Gdx.input.setInputProcessor(stage);// Make the stage consume events
-		
+
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
 		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
@@ -121,21 +135,70 @@ public class BossMapState extends AbstractState{
 		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
-		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/10", countQuestStyle);
-		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
-		countQuestLabel.setColor(Color.WHITE);
-		countQuestLabel.setFontScale(1f, 1f);
-		
+
+		// Create a button style
+		TextButton.TextButtonStyle yesButtonStyle = new TextButton.TextButtonStyle();
+		yesButtonStyle.up = skinQuest.newDrawable("yes-active");
+		yesButtonStyle.over = skinQuest.newDrawable("yes-over");
+		yesButtonStyle.down = skinQuest.newDrawable("yes-clicked");
+		yesButtonStyle.font = skinQuest.getFont("default");
+
+		TextButton.TextButtonStyle noButtonStyle = new TextButton.TextButtonStyle();
+		noButtonStyle.up = skinQuest.newDrawable("no-active");
+		noButtonStyle.over = skinQuest.newDrawable("no-over");
+		noButtonStyle.down = skinQuest.newDrawable("no-clicked");
+		noButtonStyle.font = skinQuest.getFont("default");
+
+		// HUD Quest
+		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
+		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
+		yesButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (!(loadPlayer.getProp().getProperty("Quest1").equals("end")
+						&& loadPlayer.getProp().getProperty("Quest2").equals("end"))) {
+					aw.setScreen(new BossMapState(aw, player.getX(), player.getY()));
+				} else {
+					aw.setScreen(new BattleState(aw, "BossMapState", player.getX(), player.getY()));
+				}
+				sound.stop();
+			}
+		});
+
+		noButton = new TextButton("", noButtonStyle); // Use the initialized skin
+		noButton.setPosition(Gdx.graphics.getWidth() / 2 + 70, Gdx.graphics.getHeight() / 16);
+		noButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				try {
+					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				sound.stop();
+				aw.setScreen(new BossMapState(aw, player.getX(), player.getY()));
+			}
+		});
+
+		// Label
+		npcQuestLabel = new Label("กำจัด Spider จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?", npcQuestStyle);
+		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 5, 10, 10);
+		npcQuestLabel.setColor(Color.WHITE);
+		npcQuestLabel.setFontScale(1f, 1f);
+
+		stage.addActor(yesButton);
+		stage.addActor(noButton);
+		stage.addActor(npcQuestLabel);
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
-		stage.addActor(countQuestLabel);
 
-		positionMonster1X = Math.random() * 8 + 8;
-		positionMonster1Y = Math.random() * 4 + 9;
-		positionMonster2X = Math.random() * 8 + 8;
-		positionMonster2Y = Math.random() * 2 + 6;
-		
+		yesButton.setVisible(false);
+		noButton.setVisible(false);
+		npcQuestLabel.setVisible(false);
+
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
 
@@ -179,13 +242,13 @@ public class BossMapState extends AbstractState{
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -194,33 +257,60 @@ public class BossMapState extends AbstractState{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		if(loadPlayer.getProp().getProperty("Quest2").equals("start")) {
-			countQuestLabel.setVisible(true);
-		} else {
-			countQuestLabel.setVisible(false);
+		if(loadPlayer.getProp().getProperty("Boss").equals("end")) {
+			sound.stop();
+			aw.setScreen(new EndStoryState(aw));
 		}
-		
-		npcQuest = new Rectangle(7.5f, 8, 1, 1);
-		toCave = new Rectangle(4, 0, 1.5f, 1);
 
 		actor = new Rectangle(player.getX(), player.getY(), 1, 1);
+		npcQuest = new Rectangle(4.5f, 13.5f, 0.5f, 0.5f);
+		toCave = new Rectangle(4, 0, 1.5f, 1);
+
+		 // Press "Space" to talk NPC in nearby
+		if (actor.overlaps(npcQuest)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				npcCheck = true;
+				Gdx.input.setInputProcessor(stage);
+				yesButton.setVisible(true);
+				noButton.setVisible(true);
+				npcQuestLabel.setVisible(true);
+			}
+		}
+
+		// Check Quest
+		if (loadPlayer.getProp().getProperty("Quest1").equals("end")
+				&& loadPlayer.getProp().getProperty("Quest2").equals("end")) {
+			npcQuestLabel.setText("อะไรนะเจ้ากำจัดสมุนของข้าหมดแล้ว...ข้าจะกำจัดเจ้าเอง !!");
+			npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+			npcQuestLabel.setColor(Color.WHITE);
+			npcQuestLabel.setFontScale(1f, 1f);
+		} else {
+			npcQuestLabel.setText("เจ้ายังกำจัดสมุนของฆ่าไม่หมดเลย...");
+			npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
+			npcQuestLabel.setColor(Color.WHITE);
+			npcQuestLabel.setFontScale(1f, 1f);
+			yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+			noButton.setVisible(false);
+		}
+
+		
 		playerControll.update(delta);
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
-		 if(camera.position.x > Settings.V_WIDTH) {
-		 camera.position.x = Settings.V_WIDTH;
-		 } else if(camera.position.x < Settings.V_WIDTH / 2) {
-		 camera.position.x = Settings.V_WIDTH / 2;
-		 }
-//		if (camera.position.y > Settings.V_HEIGHT) {
-//			camera.position.y = Settings.V_HEIGHT;
-//		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
-//			camera.position.y = Settings.V_HEIGHT / 4;
-//		}
+		if (camera.position.x > Settings.V_WIDTH) {
+			camera.position.x = Settings.V_WIDTH;
+		} else if (camera.position.x < Settings.V_WIDTH / 2) {
+			camera.position.x = Settings.V_WIDTH / 2;
+		}
+		// if (camera.position.y > Settings.V_HEIGHT) {
+		// camera.position.y = Settings.V_HEIGHT;
+		// } else if (camera.position.y < Settings.V_HEIGHT / 4) {
+		// camera.position.y = Settings.V_HEIGHT / 4;
+		// }
 
 		camera.update();
-		
+
 		// Move Map
 		if (actor.overlaps(toCave)) { // -- to Cave Map -- //
 			try {
@@ -235,43 +325,30 @@ public class BossMapState extends AbstractState{
 			screen = new CaveState(aw, 8, 13);
 			aw.setScreen(screen);
 		}
-		
-//		System.out.println("X 1 : " + positionMonster1X);
-//		System.out.println("Y 1 : " + positionMonster1Y);
-//		System.out.println("X 2 : " + positionMonster2X);
-//		System.out.println("Y 2 : " + positionMonster2Y);
-		
-		// Detection Monster in map
-//		if (actor.overlaps(monsterSpawn1)) {
-//			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
-//				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
-//				aw.setScreen(screen);
-//			}
-//		} else if (actor.overlaps(monsterSpawn2)) {
-//			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
-//				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
-//				aw.setScreen(screen);
-//			}
-//		}
-		
+
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+
+		// Show Chat Box
+		if (npcCheck) {
+			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
+			player.initMove(DIRECTION.STAND);
+		}
+
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
-		if((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
+		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 2 + 195, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
-			countQuestLabel.setBounds(Gdx.graphics.getWidth() / 2 + 195, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		} else {
 			sb.draw(alanHud, 0, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
-			countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		}
 		sb.end();
 		stage.act();
@@ -287,13 +364,13 @@ public class BossMapState extends AbstractState{
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

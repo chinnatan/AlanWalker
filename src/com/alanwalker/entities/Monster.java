@@ -47,6 +47,11 @@ public class Monster {
 			monsterHp = (int) (60 + Math.pow(level, level));
 			monsterAttack = 0;
 			monsterExp = 10;
+		} else if(state == "BossMapState") {
+			monster = new Texture(Gdx.files.internal("resource/monsterandboss/Wizard.png"));
+			monsterHp = (int) (100 + Math.pow(level, level));
+			monsterAttack = 0;
+			monsterExp = 20;
 		}
 	}
 	
@@ -61,6 +66,8 @@ public class Monster {
 			monsterAttack = (int) (Math.random() * 40 + Math.pow(level, 2)) ;
 		} else if(state == "CaveBoss") {
 			monsterAttack = (int) (Math.random() * 50 + Math.pow(level, 2)) ;
+		} else if(state == "BossMapState") {
+			monsterAttack = (int) (Math.random() * 60 + Math.pow(level, 2)) ;
 		}
 	}
 

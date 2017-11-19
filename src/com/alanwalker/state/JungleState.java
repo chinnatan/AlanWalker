@@ -12,6 +12,7 @@ import com.alanwalker.util.LoadSave;
 import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -43,6 +44,7 @@ public class JungleState extends AbstractState {
 	private SpriteBatch sb;
 	private AnimationSet animationAlan;
 	private Texture alanHud;
+	private Sound sound;
 
 	private Rectangle monsterSpawn, actor, npcQuest;
 
@@ -91,6 +93,13 @@ public class JungleState extends AbstractState {
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
+		
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/Village-Jungle.mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
 
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
@@ -160,6 +169,7 @@ public class JungleState extends AbstractState {
 		yesButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				sound.stop();
 				if (loadPlayer.getProp().getProperty("Quest1").equals("start")) {
 					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
 				} else if (loadPlayer.getProp().getProperty("Quest1").equals("end")) {
@@ -194,6 +204,7 @@ public class JungleState extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new JungleState(aw, player.getX(), player.getY()));
 			}
 		});
@@ -359,6 +370,7 @@ public class JungleState extends AbstractState {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new VillageState(aw, 11, 1.5f);
 			aw.setScreen(screen);
 		} else if (actor.overlaps(toCave)) { // -- to JungleToCave Map -- //
@@ -370,6 +382,7 @@ public class JungleState extends AbstractState {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new JungleToCaveState(aw, 18, 9);
 			aw.setScreen(screen);
 		}

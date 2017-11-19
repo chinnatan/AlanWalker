@@ -13,6 +13,7 @@ import com.alanwalker.util.LoadSave;
 import com.alanwalker.util.PlayerControl;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -44,6 +45,7 @@ public class VillageState extends AbstractState {
 	private SpriteBatch sb;
 	private AnimationSet animationAlan;
 	private Texture alanHud;
+	private Sound sound;
 
 	protected Rectangle monsterSpawn, actor, npcNurse, toJungle;
 	private double positionMonsterX;
@@ -71,6 +73,13 @@ public class VillageState extends AbstractState {
 	public VillageState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
+		
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/Village-Jungle.mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
 
 		// Load data player
 		loadPlayer = new LoadSave();
@@ -150,6 +159,7 @@ public class VillageState extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
 			}
 		});
@@ -166,6 +176,7 @@ public class VillageState extends AbstractState {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
 			}
 		});
@@ -288,6 +299,7 @@ public class VillageState extends AbstractState {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			screen = new JungleState(aw, 6.5f, 12);
 			aw.setScreen(screen);
 		}

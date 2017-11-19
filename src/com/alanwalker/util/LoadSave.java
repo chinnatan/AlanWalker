@@ -1,5 +1,6 @@
 package com.alanwalker.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,6 +39,7 @@ public class LoadSave {
 			try {
 				outputSave = new FileOutputStream("saves/save.properties");
 				// set the properties value
+				prop.setProperty("newgame", "new");
 				prop.setProperty("hp", playerHP);
 				prop.setProperty("level", level);
 				prop.setProperty("exp", "0");
@@ -49,6 +51,7 @@ public class LoadSave {
 				prop.setProperty("Quest1CountMonster", "null");
 				prop.setProperty("Quest2", "null");
 				prop.setProperty("Quest2CountMonster", "null");
+				prop.setProperty("Boss", "null");
 				// save properties to project root folder
 				prop.store(outputSave, null);
 			} catch (IOException io) {
@@ -57,7 +60,10 @@ public class LoadSave {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
 	}
+
 
 	public String getLevel() {
 		return level;
