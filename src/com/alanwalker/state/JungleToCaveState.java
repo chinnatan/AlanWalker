@@ -339,11 +339,13 @@ public class JungleToCaveState extends AbstractState{
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn1)) {
 			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+				sound.stop();
 				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		} else if (actor.overlaps(monsterSpawn2)) {
 			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+				sound.stop();
 				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}

@@ -13,6 +13,7 @@ import com.alanwalker.main.AlanWalker;
 import com.alanwalker.main.Settings;
 import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,6 +42,7 @@ public class BattleState extends AbstractState {
 	private Texture alanHud, alanCharacter, bgStage, monsterHud, alanHudTop;
 	private boolean youTurn = true, monTurn;
 	private float delayTime = 0, delayTimeAttack = 0;
+	private Sound sound;
 
 	// Button in State
 	private TextButton attackBtn;
@@ -73,6 +75,13 @@ public class BattleState extends AbstractState {
 		this.monsterName = monster;
 		this.player = new Actor();
 		sb = new SpriteBatch();
+		
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/BattleState.mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
 
 		// Load data player
 		loadPlayer = new LoadSave();
@@ -386,6 +395,7 @@ public class BattleState extends AbstractState {
 				}
 
 				if (playerHp <= 0) {
+					sound.stop();
 					try {
 						loadPlayer.getProp().setProperty("hp", "50");
 						loadPlayer.getProp().setProperty("mapName", "VillageState");

@@ -391,9 +391,11 @@ public class JungleState extends AbstractState {
 		if (loadPlayer.getProp().getProperty("Quest1CountMonster") != null) {
 			if (actor.overlaps(monsterSpawn)) {
 				if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+					sound.stop();
 					screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
 					aw.setScreen(screen);
 				} else if ((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+					sound.stop();
 					screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
 					aw.setScreen(screen);
 				}

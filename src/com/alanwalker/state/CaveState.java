@@ -427,11 +427,13 @@ public class CaveState extends AbstractState{
 			}
 		} else if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
 			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+				sound.stop();
 				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		} else if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
 			if((int) positionMonster3X == player.getX() && (int) positionMonster3Y == player.getY()) {
+				sound.stop();
 				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
