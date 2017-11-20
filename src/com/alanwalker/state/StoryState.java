@@ -7,6 +7,7 @@ import com.alanwalker.main.AlanWalker;
 import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,6 +19,7 @@ public class StoryState extends AbstractState implements InputProcessor {
 	private int next = 0;
 	private Texture[] storys;
 	private String fileName;
+	private Sound sound;
 	
 	public StoryState(AlanWalker aw) {
 		super(aw);
@@ -27,12 +29,19 @@ public class StoryState extends AbstractState implements InputProcessor {
 			fileName = String.format("resource/backgrounds/story/%1d.png", i+1);
 			storys[i] = new Texture(Gdx.files.internal(fileName));
 		}
+		
+		// Load Sound
+		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/StoryScreen.mp3"));
+		long id;
+		id = sound.play();
+		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
+		sound.setLooping(id, true);
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
+		sb.dispose();
+		sound.dispose();
 	}
 
 	@Override
@@ -87,6 +96,7 @@ public class StoryState extends AbstractState implements InputProcessor {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				sound.stop();
 				aw.setScreen(new VillageState(aw, 12, 2));
 			}
 		} else if(keycode == Keys.ESCAPE) {
@@ -97,6 +107,7 @@ public class StoryState extends AbstractState implements InputProcessor {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sound.stop();
 			aw.setScreen(new VillageState(aw, 12, 2));
 		}
 		return false;

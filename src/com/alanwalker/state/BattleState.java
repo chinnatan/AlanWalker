@@ -357,6 +357,7 @@ public class BattleState extends AbstractState {
 		}
 		
 		if(mapCheck && delayYouWin > 1) {
+			sound.stop();
 			// Come Back In Present Map
 			if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
 				aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
