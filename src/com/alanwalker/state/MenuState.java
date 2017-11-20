@@ -97,7 +97,7 @@ public class MenuState extends AbstractState {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				try {
-					loadPlayer.getProp().setProperty("newgame", "new");
+					loadPlayer.getProp().setProperty("newgame", "con");
 					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -179,7 +179,7 @@ public class MenuState extends AbstractState {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if (loadPlayer.getProp().getProperty("newgame").equals("new")) {
+		if (loadPlayer.getProp().getProperty("newgame").equals("con")) {
 			newGameButton.setVisible(false);
 			continueButton.setVisible(true);
 		} else {

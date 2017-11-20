@@ -229,8 +229,8 @@ public class CaveState extends AbstractState{
 		});
 		
 		// Label
-		npcQuestLabel = new Label("กำจัด Spider จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?", npcQuestStyle);
-		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 5, 10, 10);
+		npcQuestLabel = new Label("กำจัด Corrupted Rock Spirit จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?", npcQuestStyle);
+		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 12, Gdx.graphics.getHeight() / 5, 10, 10);
 		npcQuestLabel.setColor(Color.WHITE);
 		npcQuestLabel.setFontScale(1f, 1f);
 		

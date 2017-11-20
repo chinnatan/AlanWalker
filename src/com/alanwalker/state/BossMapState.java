@@ -256,8 +256,8 @@ public class BossMapState extends AbstractState {
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		if(loadPlayer.getProp().getProperty("Boss").equals("end")) {
+
+		if (loadPlayer.getProp().getProperty("Boss").equals("end")) {
 			sound.stop();
 			aw.setScreen(new EndStoryState(aw));
 		}
@@ -266,7 +266,7 @@ public class BossMapState extends AbstractState {
 		npcQuest = new Rectangle(4.5f, 13.5f, 0.5f, 0.5f);
 		toCave = new Rectangle(4, 0, 1.5f, 1);
 
-		 // Press "Space" to talk NPC in nearby
+		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 				npcCheck = true;
@@ -293,7 +293,6 @@ public class BossMapState extends AbstractState {
 			noButton.setVisible(false);
 		}
 
-		
 		playerControll.update(delta);
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
@@ -303,11 +302,6 @@ public class BossMapState extends AbstractState {
 		} else if (camera.position.x < Settings.V_WIDTH / 2) {
 			camera.position.x = Settings.V_WIDTH / 2;
 		}
-		// if (camera.position.y > Settings.V_HEIGHT) {
-		// camera.position.y = Settings.V_HEIGHT;
-		// } else if (camera.position.y < Settings.V_HEIGHT / 4) {
-		// camera.position.y = Settings.V_HEIGHT / 4;
-		// }
 
 		camera.update();
 
@@ -329,6 +323,9 @@ public class BossMapState extends AbstractState {
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
+				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
+				Settings.SCALED_TILE_SIZE * 1.5f);
 
 		// Show Chat Box
 		if (npcCheck) {
@@ -336,9 +333,6 @@ public class BossMapState extends AbstractState {
 			player.initMove(DIRECTION.STAND);
 		}
 
-		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
-				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
-				Settings.SCALED_TILE_SIZE * 1.5f);
 		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);

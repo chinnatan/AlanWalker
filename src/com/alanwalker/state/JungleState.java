@@ -93,7 +93,7 @@ public class JungleState extends AbstractState {
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
-		
+
 		// Load Sound
 		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/Village-Jungle.mp3"));
 		long id;
@@ -162,7 +162,7 @@ public class JungleState extends AbstractState {
 		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		countQuestLabel.setColor(Color.WHITE);
 		countQuestLabel.setFontScale(1f, 1f);
-		
+
 		// HUD Quest
 		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
 		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
@@ -319,11 +319,6 @@ public class JungleState extends AbstractState {
 		} else if (camera.position.x < Settings.V_WIDTH / 2) {
 			camera.position.x = Settings.V_WIDTH / 2;
 		}
-		// if (camera.position.y > Settings.V_HEIGHT) {
-		// camera.position.y = Settings.V_HEIGHT;
-		// } else if (camera.position.y < Settings.V_HEIGHT / 4) {
-		// camera.position.y = Settings.V_HEIGHT / 4;
-		// }
 
 		camera.update();
 
@@ -405,6 +400,9 @@ public class JungleState extends AbstractState {
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
+				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
+				Settings.SCALED_TILE_SIZE * 1.5f);
 
 		// Show Chat Box
 		if (npcCheck) {
@@ -412,10 +410,6 @@ public class JungleState extends AbstractState {
 			player.initMove(DIRECTION.STAND);
 		}
 
-		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
-				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
-				Settings.SCALED_TILE_SIZE * 1.5f);
-		
 		// Automatic Move HUD ALAN
 		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
@@ -430,7 +424,7 @@ public class JungleState extends AbstractState {
 			playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		}
-		
+
 		sb.end();
 		stage.act();
 		stage.draw();

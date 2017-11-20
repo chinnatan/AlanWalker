@@ -47,7 +47,7 @@ public class VillageState extends AbstractState {
 	private Texture alanHud;
 	private Sound sound;
 
-	protected Rectangle monsterSpawn, actor, npcNurse, toJungle;
+	protected Rectangle monsterSpawn, actor, toJungle;
 	private double positionMonsterX;
 	private double positionMonsterY;
 
@@ -64,10 +64,16 @@ public class VillageState extends AbstractState {
 	private Stage stage, stageQuest;
 	private Label playerHPLabel, playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
-	private Label nurseLabel;
-	private Label.LabelStyle nurseStyle;
+	private Label npcLabel;
+	private Label.LabelStyle npcStyle;
 	private TextButton yesButton, noButton;
 	private Texture dialogueBox;
+	
+	// NPC System
+	private Rectangle npcNurse;
+	private Rectangle npcVillager1;
+	private Rectangle npcVillager2;
+	private int npcSelection;
 	private boolean npcCheck = false;
 
 	public VillageState(AlanWalker aw, float positionX, float positionY) {
@@ -113,8 +119,8 @@ public class VillageState extends AbstractState {
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
-		nurseStyle = new Label.LabelStyle();
-		nurseStyle.font = skinQuest.getFont("default");
+		npcStyle = new Label.LabelStyle();
+		npcStyle.font = skinQuest.getFont("default");
 
 		// Create a button style
 		TextButton.TextButtonStyle yesButtonStyle = new TextButton.TextButtonStyle();
@@ -150,17 +156,39 @@ public class VillageState extends AbstractState {
 		yesButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				playerHP = Integer.toString(100);
-				try {
-					loadPlayer.getProp().setProperty("hp", playerHP);
-					loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
-					loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
-					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
-				} catch (IOException e) {
-					e.printStackTrace();
+				if (npcSelection == 0) {
+					playerHP = Integer.toString(100);
+					try {
+						loadPlayer.getProp().setProperty("hp", playerHP);
+						loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+						loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					sound.stop();
+					aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
+				} else if(npcSelection == 1) {
+					try {
+						loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+						loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					sound.stop();
+					aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
+				} else if(npcSelection == 2) {
+					try {
+						loadPlayer.getProp().setProperty("startX", String.valueOf(positionPlayerX));
+						loadPlayer.getProp().setProperty("startY", String.valueOf(positionPlayerY));
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					sound.stop();
+					aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
 				}
-				sound.stop();
-				aw.setScreen(new VillageState(aw, player.getX(), player.getY()));
 			}
 		});
 
@@ -182,21 +210,21 @@ public class VillageState extends AbstractState {
 		});
 
 		// HUD Nurse
-		nurseLabel = new Label("คุณต้องการเพิ่ม hp หรือไม่", nurseStyle);
-		nurseLabel.setBounds(Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 5, 10, 10);
-		nurseLabel.setColor(Color.WHITE);
-		nurseLabel.setFontScale(1f, 1f);
+		npcLabel = new Label("คุณต้องการเพิ่ม hp หรือไม่", npcStyle);
+		npcLabel.setBounds(Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 5, 10, 10);
+		npcLabel.setColor(Color.WHITE);
+		npcLabel.setFontScale(1f, 1f);
 
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
 		stage.addActor(yesButton);
 		stage.addActor(noButton);
-		stage.addActor(nurseLabel);
+		stage.addActor(npcLabel);
 		
 		yesButton.setVisible(false);
 		noButton.setVisible(false);
-		nurseLabel.setVisible(false);
+		npcLabel.setVisible(false);
 
 		positionMonsterX = Math.random() * 10 + 1;
 		positionMonsterY = Math.random() * 3 + 1;
@@ -258,6 +286,8 @@ public class VillageState extends AbstractState {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		npcNurse = new Rectangle(12, 7, 1, 1);
+		npcVillager1 = new Rectangle(3, 6.5f, 1, 1);
+		npcVillager2 = new Rectangle(12, 1, 1, 1);
 		toJungle = new Rectangle(10.5f, 0, 1, 1);
 
 		actor = new Rectangle(player.getX(), player.getY(), 2, 2);
@@ -265,11 +295,6 @@ public class VillageState extends AbstractState {
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
-		// if(camera.position.x > Settings.V_WIDTH) {
-		// camera.position.x = Settings.V_WIDTH;
-		// } else if(camera.position.x < Settings.V_WIDTH / 2) {
-		// camera.position.x = Settings.V_WIDTH / 2;
-		// }
 		if (camera.position.y > Settings.V_HEIGHT) {
 			camera.position.y = Settings.V_HEIGHT;
 		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
@@ -281,11 +306,35 @@ public class VillageState extends AbstractState {
 		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcNurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				npcSelection = 0;
 				npcCheck = true;
 				Gdx.input.setInputProcessor(stage);
 				yesButton.setVisible(true);
 				noButton.setVisible(true);
-				nurseLabel.setVisible(true);
+				npcLabel.setText("คุณต้องการเพิ่ม hp หรือไม่");
+				npcLabel.setVisible(true);
+			}
+		} else if(actor.overlaps(npcVillager1)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				npcSelection = 1;
+				npcCheck = true;
+				Gdx.input.setInputProcessor(stage);
+				yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+				yesButton.setVisible(true);
+				noButton.setVisible(false);
+				npcLabel.setText("ช่วยหมู่บ้านลุงด้วยยยยย");
+				npcLabel.setVisible(true);
+			}
+		} else if(actor.overlaps(npcVillager2)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				npcSelection = 2;
+				npcCheck = true;
+				Gdx.input.setInputProcessor(stage);
+				yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
+				yesButton.setVisible(true);
+				noButton.setVisible(false);
+				npcLabel.setText("ขอบคุณที่เจ้ามาช่วยหมู่บ้านฉันนะ");
+				npcLabel.setVisible(true);
 			}
 		}
 
@@ -307,15 +356,17 @@ public class VillageState extends AbstractState {
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
+				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
+				Settings.SCALED_TILE_SIZE * 1.5f);
+		
 		// Show Chat Box
 		if (npcCheck) {
 			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
 			player.initMove(DIRECTION.STAND);
 		}
 		
-		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
-				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
-				Settings.SCALED_TILE_SIZE * 1.5f);
+		
 		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);

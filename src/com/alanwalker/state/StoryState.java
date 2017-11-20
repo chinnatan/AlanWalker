@@ -1,33 +1,32 @@
 package com.alanwalker.state;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import com.alanwalker.main.AlanWalker;
+import com.alanwalker.util.LoadSave;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class StoryState extends AbstractState implements InputProcessor {
 	
-	private AbstractState screen;
-	private BitmapFont font;
 	private SpriteBatch sb;
 	private int next = 0;
-	private String[] storys = { "กดปุ่ม 'Enter' ดำเนินการต่อ", "ณ หมู่บ้านแห่งหนึ่งที่สงบสุข และห่างไกล ชาวบ้านทุกคนต่าง",
-			"อยู่กันอย่างมีความสุขแต่แล้ววันหนึ่งก็มีเหล่าพ่อมดชั่วร้ายผ่าน",
-			"หมู่บ้านนี้มาและเข้ามาทำลายหมู่บ้าน โดยสาบให้หมู่บ้านนี้",
-			"แห้งแล้ง และมืดมน หลังจากนั้นผู้คนในหมู่บ้านก็ไม่มีความสุข",
-			"ไม่เคยมีพระอาทิตขึ้นอีกเลย น้ำก็แห้งขอด การจะช่วยหมู่บ้านนี้",
-			"ได้คือต้องไปตามหาเทพธิดาเพื่อให้พวกเขาช่วยแก้มนต์ดำให้ " };
+	private Texture[] storys;
+	private String fileName;
 	
 	public StoryState(AlanWalker aw) {
 		super(aw);
-
-		font = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
-		
 		sb = new SpriteBatch();
+		storys = new Texture[4];
+		for(int i=0;i<4;i++) {
+			fileName = String.format("resource/backgrounds/story/%1d.png", i+1);
+			storys[i] = new Texture(Gdx.files.internal(fileName));
+		}
 	}
 
 	@Override
@@ -54,8 +53,7 @@ public class StoryState extends AbstractState implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		sb.begin();
-		font.setColor(Color.WHITE);
-		font.draw(sb, storys[next], Gdx.graphics.getWidth() / 6, Gdx.graphics.getHeight() / 2);
+		sb.draw(storys[next], 0, 0);
 		sb.end();
 	}
 
@@ -79,12 +77,27 @@ public class StoryState extends AbstractState implements InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 		if(keycode == Keys.ENTER) {
-			if(next != 6) {
+			if(next != 3) {
 				next++;
 			} else {
-				screen = new VillageState(aw, 12, 2);
-				aw.setScreen(screen);
+				try {
+					LoadSave loadPlayer = new LoadSave();
+					loadPlayer.getProp().setProperty("mapName", "VillageState");
+					loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				aw.setScreen(new VillageState(aw, 12, 2));
 			}
+		} else if(keycode == Keys.ESCAPE) {
+			try {
+				LoadSave loadPlayer = new LoadSave();
+				loadPlayer.getProp().setProperty("mapName", "VillageState");
+				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			aw.setScreen(new VillageState(aw, 12, 2));
 		}
 		return false;
 	}

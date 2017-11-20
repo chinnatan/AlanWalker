@@ -98,7 +98,7 @@ public class EndStoryState extends AbstractState implements InputProcessor {
 			} else {
 				try {
 					LoadSave end = new LoadSave();
-					end.getProp().setProperty("newgame", "null");
+					end.getProp().setProperty("newgame", "end");
 					end.getProp().setProperty("hp", playerHP);
 					end.getProp().setProperty("level", level);
 					end.getProp().setProperty("exp", "0");

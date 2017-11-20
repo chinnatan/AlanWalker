@@ -34,8 +34,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class JungleToCaveState extends AbstractState{
-	
+public class JungleToCaveState extends AbstractState {
+
 	private AbstractState screen;
 	private Actor player;
 	private PlayerControl playerControll;
@@ -52,7 +52,7 @@ public class JungleToCaveState extends AbstractState{
 	private double positionMonster1Y;
 	private double positionMonster2X;
 	private double positionMonster2Y;
-	
+
 	// Move Map
 	private Rectangle toJungle;
 	private Rectangle toCave;
@@ -64,7 +64,7 @@ public class JungleToCaveState extends AbstractState{
 	private String playerHP;
 	private float positionPlayerX, positionPlayerY;
 	private LoadSave loadPlayer;
-	
+
 	// HUD
 	private Skin skin, skinQuest;
 	private Stage stage, stageQuest;
@@ -75,7 +75,7 @@ public class JungleToCaveState extends AbstractState{
 	private TextButton yesButton, noButton;
 	private Texture dialogueBox;
 	private boolean npcCheck = false;
-	
+
 	public JungleToCaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
@@ -88,20 +88,20 @@ public class JungleToCaveState extends AbstractState{
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
-		
+
 		// Load Sound
 		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/Village-Jungle.mp3"));
 		long id;
 		id = sound.play();
 		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
 		sound.setLooping(id, true);
-		
+
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
-		
+
 		// Load Button TextureAtlas
 		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
-		
+
 		// Create a font
 		BitmapFont font = new BitmapFont();
 		BitmapFont fontQuest = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
@@ -111,7 +111,7 @@ public class JungleToCaveState extends AbstractState{
 		skin.add("default", font);
 		skinQuest = new Skin(startButtonAtlas);
 		skinQuest.add("default", fontQuest);
-		
+
 		// Create a label style
 		playerHPStyle = new Label.LabelStyle();
 		playerHPStyle.font = skin.getFont("default");
@@ -136,7 +136,7 @@ public class JungleToCaveState extends AbstractState{
 		noButtonStyle.font = skinQuest.getFont("default");
 
 		stage = new Stage();
-		
+
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
 		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
@@ -150,7 +150,7 @@ public class JungleToCaveState extends AbstractState{
 		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
-		
+
 		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
 		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
 		yesButton.addListener(new ClickListener() {
@@ -186,21 +186,20 @@ public class JungleToCaveState extends AbstractState{
 				aw.setScreen(new JungleToCaveState(aw, player.getX(), player.getY()));
 			}
 		});
-		
-		
+
 		// HUD Nurse
 		nurseLabel = new Label("คุณต้องการเพิ่ม hp หรือไม่", nurseStyle);
 		nurseLabel.setBounds(Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 5, 10, 10);
 		nurseLabel.setColor(Color.WHITE);
 		nurseLabel.setFontScale(1f, 1f);
-		
+
 		stage.addActor(playerHPLabel);
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
 		stage.addActor(yesButton);
 		stage.addActor(noButton);
 		stage.addActor(nurseLabel);
-		
+
 		yesButton.setVisible(false);
 		noButton.setVisible(false);
 		nurseLabel.setVisible(false);
@@ -209,7 +208,7 @@ public class JungleToCaveState extends AbstractState{
 		positionMonster1Y = Math.random() * 4 + 9;
 		positionMonster2X = Math.random() * 8 + 8;
 		positionMonster2Y = Math.random() * 2 + 6;
-		
+
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
 
@@ -253,27 +252,27 @@ public class JungleToCaveState extends AbstractState{
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void update(float delta) {
 		playerLevelLabel.setText("Level : " + level);
 	}
-	
+
 	@Override
 	public void render(float delta) {
-		
+
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		update(delta);
-		
+
 		npcNurse = new Rectangle(7.5f, 8, 1, 1);
 		toJungle = new Rectangle(19, 9, 0.5f, 0.5f);
 		toCave = new Rectangle(1, 10, 0.5f, 05.f);
@@ -285,19 +284,14 @@ public class JungleToCaveState extends AbstractState{
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
-		 if(camera.position.x > Settings.V_WIDTH) {
-		 camera.position.x = Settings.V_WIDTH;
-		 } else if(camera.position.x < Settings.V_WIDTH / 2) {
-		 camera.position.x = Settings.V_WIDTH / 2;
-		 }
-//		if (camera.position.y > Settings.V_HEIGHT) {
-//			camera.position.y = Settings.V_HEIGHT;
-//		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
-//			camera.position.y = Settings.V_HEIGHT / 4;
-//		}
+		if (camera.position.x > Settings.V_WIDTH) {
+			camera.position.x = Settings.V_WIDTH;
+		} else if (camera.position.x < Settings.V_WIDTH / 2) {
+			camera.position.x = Settings.V_WIDTH / 2;
+		}
 
 		camera.update();
-		
+
 		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcNurse)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
@@ -308,7 +302,7 @@ public class JungleToCaveState extends AbstractState{
 				nurseLabel.setVisible(true);
 			}
 		}
-		
+
 		// Move Map
 		if (actor.overlaps(toJungle)) { // -- to Village Map -- //
 			try {
@@ -322,7 +316,7 @@ public class JungleToCaveState extends AbstractState{
 			sound.stop();
 			screen = new JungleState(aw, 0.5f, 9);
 			aw.setScreen(screen);
-		} else if(actor.overlaps(toCave)) {
+		} else if (actor.overlaps(toCave)) {
 			try {
 				loadPlayer.getProp().setProperty("mapName", "CaveState");
 				loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
@@ -335,35 +329,36 @@ public class JungleToCaveState extends AbstractState{
 			screen = new CaveState(aw, 0.5f, 12.5f);
 			aw.setScreen(screen);
 		}
-		
+
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn1)) {
-			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+			if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
 				sound.stop();
 				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		} else if (actor.overlaps(monsterSpawn2)) {
-			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+			if ((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
 				sound.stop();
 				screen = new BattleState(aw, "JungleToCaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}
-		
+
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
+		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
+				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
+				Settings.SCALED_TILE_SIZE * 1.5f);
+
 		// Show Chat Box
 		if (npcCheck) {
 			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
 			player.initMove(DIRECTION.STAND);
 		}
-		
-		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
-				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
-				Settings.SCALED_TILE_SIZE * 1.5f);
-		if((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
+
+		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
@@ -377,7 +372,7 @@ public class JungleToCaveState extends AbstractState{
 		sb.end();
 		stage.act();
 		stage.draw();
-		
+
 	}
 
 	@Override
@@ -389,13 +384,13 @@ public class JungleToCaveState extends AbstractState{
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
