@@ -210,8 +210,9 @@ public class JungleState extends AbstractState {
 		});
 
 		// Label
-		npcQuestLabel = new Label("กำจัด Slime จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?", npcQuestStyle);
-		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 5, 10, 10);
+		npcQuestLabel = new Label(
+				"กำจัด Slime (อยู่ด้านล่างของแผนที่) จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ \nเจ้าจะทำหรือไม่ ?", npcQuestStyle);
+		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 12, Gdx.graphics.getHeight() / 4 - 14, 10, 10);
 		npcQuestLabel.setColor(Color.WHITE);
 		npcQuestLabel.setFontScale(1f, 1f);
 
@@ -236,7 +237,11 @@ public class JungleState extends AbstractState {
 				alanAtlas.findRegion("alan_stand_east"), alanAtlas.findRegion("alan_stand_west"));
 
 		// Load Map Village
-		map = new TmxMapLoader().load("resource/maps/jungle/jungle.tmx");
+		if (loadPlayer.getProp().getProperty("Quest1").equals("start") || loadPlayer.getProp().getProperty("Quest1").equals("end")) {
+			map = new TmxMapLoader().load("resource/maps/jungle/jungle.tmx");
+		} else {
+			map = new TmxMapLoader().load("resource/maps/jungle/jungle-quest.tmx");
+		}
 
 		// Render Map Village
 		mapRender = new OrthogonalTiledMapRenderer(map);

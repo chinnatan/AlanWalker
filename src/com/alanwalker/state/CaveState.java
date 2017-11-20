@@ -35,8 +35,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class CaveState extends AbstractState{
-	
+public class CaveState extends AbstractState {
+
 	private AbstractState screen;
 	private Actor player;
 	private PlayerControl playerControll;
@@ -49,7 +49,7 @@ public class CaveState extends AbstractState{
 	private Sound sound;
 
 	private Rectangle actor, npcQuest;
-	
+
 	// Monster System
 	private Rectangle monsterSpawn1;
 	private Rectangle monsterSpawn2;
@@ -60,7 +60,7 @@ public class CaveState extends AbstractState{
 	private double positionMonster2Y;
 	private double positionMonster3X;
 	private double positionMonster3Y;
-	
+
 	// Move Map
 	private Rectangle toBossMap;
 	private Rectangle toJungleToCave;
@@ -72,7 +72,7 @@ public class CaveState extends AbstractState{
 	private String playerHP;
 	private float positionPlayerX, positionPlayerY;
 	private LoadSave loadPlayer;
-	
+
 	// HUD
 	private Skin skin, skinQuest;
 	private Stage stage;
@@ -80,18 +80,18 @@ public class CaveState extends AbstractState{
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
 	private Label countQuestLabel;
 	private Label.LabelStyle countQuestStyle;
-	
+
 	// Quest System
 	private Texture dialogueBox;
 	private Label npcQuestLabel;
 	private Label.LabelStyle npcQuestStyle;
 	private TextButton yesButton, noButton;
 	private boolean npcCheck = false;
-	
+
 	public CaveState(AlanWalker aw, float positionX, float positionY) {
 		super(aw);
 		sb = new SpriteBatch();
-		
+
 		// Respawn Monster in Map
 		Random rand = new Random();
 		positionMonster1X = rand.nextInt(11) + 7;
@@ -109,20 +109,20 @@ public class CaveState extends AbstractState{
 		playerHP = loadPlayer.getPlayerHP();
 		positionPlayerX = positionX;
 		positionPlayerY = positionY;
-		
+
 		// Load Sound
 		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/CaveSound.mp3"));
 		long id;
 		id = sound.play();
 		sound.setPan(id, 1f, 1f); // sets the pan of the sound to the left side at full volume
 		sound.setLooping(id, true);
-		
+
 		// Load Dialoguebox UI
 		dialogueBox = new Texture(Gdx.files.internal("resource/ui/dialoguebox/dialoguebox.png"));
 
 		// Load Button TextureAtlas
 		TextureAtlas startButtonAtlas = new TextureAtlas(Gdx.files.internal("resource/ui/button/button.atlas"));
-		
+
 		// Create a font
 		BitmapFont font = new BitmapFont();
 		BitmapFont fontQuest = new BitmapFont(Gdx.files.internal("resource/fonts/Kanit-Regular-18.fnt"));
@@ -132,7 +132,7 @@ public class CaveState extends AbstractState{
 		skin.add("default", font);
 		skinQuest = new Skin(startButtonAtlas);
 		skinQuest.add("default", fontQuest);
-		
+
 		// Create a label style
 		playerHPStyle = new Label.LabelStyle();
 		playerHPStyle.font = skin.getFont("default");
@@ -144,7 +144,7 @@ public class CaveState extends AbstractState{
 		countQuestStyle.font = skin.getFont("default");
 		npcQuestStyle = new Label.LabelStyle();
 		npcQuestStyle.font = skinQuest.getFont("default");
-		
+
 		// Create a button style
 		TextButton.TextButtonStyle yesButtonStyle = new TextButton.TextButtonStyle();
 		yesButtonStyle.up = skinQuest.newDrawable("yes-active");
@@ -159,7 +159,7 @@ public class CaveState extends AbstractState{
 		noButtonStyle.font = skinQuest.getFont("default");
 
 		stage = new Stage();
-		
+
 		// Hud Status
 		playerHPLabel = new Label("HP : " + playerHP, playerHPStyle);
 		playerHPLabel.setBounds(Gdx.graphics.getWidth() / 5 - 25, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
@@ -173,11 +173,12 @@ public class CaveState extends AbstractState{
 		playerExpLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 		playerExpLabel.setColor(Color.WHITE);
 		playerExpLabel.setFontScale(1f, 1f);
-		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/5", countQuestStyle);
+		countQuestLabel = new Label("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/5",
+				countQuestStyle);
 		countQuestLabel.setBounds(Gdx.graphics.getWidth() / 3 - 40, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
 		countQuestLabel.setColor(Color.WHITE);
 		countQuestLabel.setFontScale(1f, 1f);
-		
+
 		// HUD Quest
 		yesButton = new TextButton("", yesButtonStyle); // Use the initialized skin
 		yesButton.setPosition(Gdx.graphics.getWidth() / 15, Gdx.graphics.getHeight() / 16);
@@ -227,13 +228,15 @@ public class CaveState extends AbstractState{
 				aw.setScreen(new CaveState(aw, player.getX(), player.getY()));
 			}
 		});
-		
+
 		// Label
-		npcQuestLabel = new Label("กำจัด Corrupted Rock Spirit จำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?", npcQuestStyle);
-		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 12, Gdx.graphics.getHeight() / 5, 10, 10);
+		npcQuestLabel = new Label(
+				"กำจัด Corrupted Rock Spirit (อยู๋ด้านบนขวาของแผนที่)\nจำนวน 5 ตัวเพื่อสู้กับบอสของแมพ เจ้าจะทำหรือไม่ ?",
+				npcQuestStyle);
+		npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 12, Gdx.graphics.getHeight() / 4 - 14, 10, 10);
 		npcQuestLabel.setColor(Color.WHITE);
 		npcQuestLabel.setFontScale(1f, 1f);
-		
+
 		stage.addActor(yesButton);
 		stage.addActor(noButton);
 		stage.addActor(npcQuestLabel);
@@ -241,17 +244,16 @@ public class CaveState extends AbstractState{
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
 		stage.addActor(countQuestLabel);
-		
+
 		yesButton.setVisible(false);
 		noButton.setVisible(false);
 		npcQuestLabel.setVisible(false);
-		
 
 		positionMonster1X = Math.random() * 8 + 8;
 		positionMonster1Y = Math.random() * 4 + 9;
 		positionMonster2X = Math.random() * 8 + 8;
 		positionMonster2Y = Math.random() * 2 + 6;
-		
+
 		// Load Alan Hud
 		alanHud = new Texture(Gdx.files.internal("resource/hud/alan-hud.png"));
 
@@ -267,7 +269,11 @@ public class CaveState extends AbstractState{
 				alanAtlas.findRegion("alan_stand_east"), alanAtlas.findRegion("alan_stand_west"));
 
 		// Load Map Village
-		map = new TmxMapLoader().load("resource/maps/cave/cave.tmx");
+		if (loadPlayer.getProp().getProperty("Quest2").equals("start") || loadPlayer.getProp().getProperty("Quest2").equals("end")) {
+			map = new TmxMapLoader().load("resource/maps/cave/cave.tmx");
+		} else {
+			map = new TmxMapLoader().load("resource/maps/cave/cave-quest.tmx");
+		}
 
 		// Render Map Village
 		mapRender = new OrthogonalTiledMapRenderer(map);
@@ -295,34 +301,34 @@ public class CaveState extends AbstractState{
 
 	@Override
 	public void hide() {
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void update(float delta) {
 		countQuestLabel.setText("Quest 2 : " + loadPlayer.getProp().getProperty("Quest2CountMonster") + "/5");
 		playerLevelLabel.setText("Level : " + level);
 	}
-	
+
 	@Override
 	public void render(float delta) {
-		
+
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		update(delta);
-		
-		if(loadPlayer.getProp().getProperty("Quest2").equals("start")) {
+
+		if (loadPlayer.getProp().getProperty("Quest2").equals("start")) {
 			countQuestLabel.setVisible(true);
 		} else {
 			countQuestLabel.setVisible(false);
 		}
-		
+
 		npcQuest = new Rectangle(1.5f, 7.5f, 1, 1);
 		toBossMap = new Rectangle(7.5f, 14.5f, 1, 0.5f);
 		toJungleToCave = new Rectangle(0.5f, 13.5f, 0.5f, 0.5f);
@@ -335,19 +341,19 @@ public class CaveState extends AbstractState{
 		player.update(delta);
 		camera.position.set(player.getWorldX() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getWidth() / 2,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE + Gdx.graphics.getHeight() / 2, 0);
-		 if(camera.position.x > Settings.V_WIDTH) {
-		 camera.position.x = Settings.V_WIDTH;
-		 } else if(camera.position.x < Settings.V_WIDTH / 2) {
-		 camera.position.x = Settings.V_WIDTH / 2;
-		 }
-//		if (camera.position.y > Settings.V_HEIGHT) {
-//			camera.position.y = Settings.V_HEIGHT;
-//		} else if (camera.position.y < Settings.V_HEIGHT / 4) {
-//			camera.position.y = Settings.V_HEIGHT / 4;
-//		}
+		if (camera.position.x > Settings.V_WIDTH) {
+			camera.position.x = Settings.V_WIDTH;
+		} else if (camera.position.x < Settings.V_WIDTH / 2) {
+			camera.position.x = Settings.V_WIDTH / 2;
+		}
+		// if (camera.position.y > Settings.V_HEIGHT) {
+		// camera.position.y = Settings.V_HEIGHT;
+		// } else if (camera.position.y < Settings.V_HEIGHT / 4) {
+		// camera.position.y = Settings.V_HEIGHT / 4;
+		// }
 
 		camera.update();
-		
+
 		// Press "Space" to talk NPC in nearby
 		if (actor.overlaps(npcQuest)) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
@@ -358,7 +364,7 @@ public class CaveState extends AbstractState{
 				npcQuestLabel.setVisible(true);
 			}
 		}
-		
+
 		// Check Quest
 		if (loadPlayer.getProp().getProperty("Quest1").equals("end")) {
 			if (loadPlayer.getProp().getProperty("Quest2").equals("start")) {
@@ -391,7 +397,7 @@ public class CaveState extends AbstractState{
 			yesButton.setPosition(Gdx.graphics.getWidth() / 4 + 50, Gdx.graphics.getHeight() / 16);
 			noButton.setVisible(false);
 		}
-		
+
 		// Move Map
 		if (actor.overlaps(toBossMap)) { // -- to Boss Map -- //
 			try {
@@ -418,41 +424,41 @@ public class CaveState extends AbstractState{
 			screen = new JungleToCaveState(aw, 1, 9);
 			aw.setScreen(screen);
 		}
-		
+
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
-			if((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+			if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
 				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		} else if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
-			if((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+			if ((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
 				sound.stop();
 				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		} else if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
-			if((int) positionMonster3X == player.getX() && (int) positionMonster3Y == player.getY()) {
+			if ((int) positionMonster3X == player.getX() && (int) positionMonster3Y == player.getY()) {
 				sound.stop();
 				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
 		}
-		
+
 		mapRender.setView(camera);
 		mapRender.render();
 		sb.begin();
-		
+
 		// Show Chat Box
 		if (npcCheck) {
 			sb.draw(dialogueBox, Gdx.graphics.getWidth() / 55, 0);
 			player.initMove(DIRECTION.STAND);
 		}
-		
+
 		sb.draw(player.getSprite(), player.getWorldX() * Settings.SCALED_TILE_SIZE,
 				player.getWorldY() * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE,
 				Settings.SCALED_TILE_SIZE * 1.5f);
-		if((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
+		if ((player.getX() >= 0 && player.getX() <= 9) && (player.getY() >= 11 && player.getY() <= 14)) {
 			sb.draw(alanHud, 340, 380, 300, 100);
 			playerHPLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 200, 10, 10);
 			playerLevelLabel.setBounds(Gdx.graphics.getWidth() / 2 + 125, Gdx.graphics.getHeight() / 2 + 170, 10, 10);
@@ -468,7 +474,7 @@ public class CaveState extends AbstractState{
 		sb.end();
 		stage.act();
 		stage.draw();
-		
+
 	}
 
 	@Override
@@ -480,13 +486,13 @@ public class CaveState extends AbstractState{
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
