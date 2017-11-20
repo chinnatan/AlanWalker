@@ -25,7 +25,7 @@ public class EndStoryState extends AbstractState implements InputProcessor {
 	private String attack = Integer.toString((int) (Math.random() * 10));
 	private String playerHP = "100";
 	private String startX = "10.5";
-	private String startY = "0";
+	private String startY = "1";
 	private String exp = "0";
 	private String mapName = "VillageState";
 	
@@ -107,9 +107,9 @@ public class EndStoryState extends AbstractState implements InputProcessor {
 					end.getProp().setProperty("startY", startY);
 					end.getProp().setProperty("mapName", mapName);
 					end.getProp().setProperty("Quest1", "null");
-					end.getProp().setProperty("Quest1CountMonster", "null");
+					end.getProp().setProperty("Quest1CountMonster", "0");
 					end.getProp().setProperty("Quest2", "null");
-					end.getProp().setProperty("Quest2CountMonster", "null");
+					end.getProp().setProperty("Quest2CountMonster", "0");
 					end.getProp().setProperty("Boss", "null");
 					// save properties to project root folder
 					end.getProp().store(new FileOutputStream("saves/save.properties"), null);

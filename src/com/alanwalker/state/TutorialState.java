@@ -68,7 +68,7 @@ public class TutorialState extends AbstractState implements InputProcessor{
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if(keycode == Keys.ENTER) {
+		if(keycode == Keys.ESCAPE) {
 			aw.setScreen(new MenuState(aw));
 		}
 		return false;

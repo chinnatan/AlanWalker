@@ -1,12 +1,8 @@
 package com.alanwalker.state;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
 import com.alanwalker.entities.Actor;
 import com.alanwalker.entities.Monster;
 import com.alanwalker.main.AlanWalker;
@@ -33,15 +29,14 @@ import com.badlogic.gdx.utils.Timer.Task;
 public class BattleState extends AbstractState {
 
 	private AbstractState screen;
-	private int oldX, oldY;
 	private Monster monster;
 	private Actor player;
 	private SpriteBatch sb;
-	private Label monsterHpLabel, playerHpLabel, playerTurnLabel;
-	private Label.LabelStyle monsterHPStyle, playerTurnStyle;
+	private Label monsterHpLabel, playerHpLabel, playerTurnLabel, playerWinLabel;
+	private Label.LabelStyle monsterHPStyle, playerTurnStyle, playerWinStyle;
 	private Texture alanHud, alanCharacter, bgStage, monsterHud, alanHudTop;
 	private boolean youTurn = true, monTurn;
-	private float delayTime = 0, delayTimeAttack = 0;
+	private float delayTime = 0, delayTimeAttack = 0, delayYouWin = 0;
 	private Sound sound;
 
 	// Button in State
@@ -68,6 +63,7 @@ public class BattleState extends AbstractState {
 	private Stage stage;
 	private Label playerLevelLabel, playerExpLabel;
 	private Label.LabelStyle playerHPStyle, playerLevelStyle, playerExpStyle;
+	private boolean mapCheck = false;
 
 	public BattleState(AlanWalker aw, String monster, float oldX, float oldY) {
 		super(aw);
@@ -75,7 +71,7 @@ public class BattleState extends AbstractState {
 		this.monsterName = monster;
 		this.player = new Actor();
 		sb = new SpriteBatch();
-		
+
 		// Load Sound
 		sound = (Sound) Gdx.audio.newSound(Gdx.files.internal("resource/sounds/BattleState.mp3"));
 		long id;
@@ -139,9 +135,17 @@ public class BattleState extends AbstractState {
 		playerLevelStyle.font = skin.getFont("default");
 		playerExpStyle = new Label.LabelStyle();
 		playerExpStyle.font = skin.getFont("default");
+		playerWinStyle = new Label.LabelStyle();
+		playerWinStyle.font = skin.getFont("default");
 
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);// Make the stage consume events
+
+		// Show Player Win
+		playerWinLabel = new Label("", playerWinStyle);
+		playerWinLabel.setBounds(Gdx.graphics.getWidth() / 2.5f, Gdx.graphics.getHeight() / 2, 100, 100);
+		playerWinLabel.setColor(Color.WHITE);
+		playerWinLabel.setFontScale(2f, 2f);
 
 		attackBtn = new TextButton("", attackBtnStyle); // Use the initialized skin
 		attackBtn.setPosition(Gdx.graphics.getWidth() / 45, Gdx.graphics.getHeight() / 7);
@@ -159,7 +163,15 @@ public class BattleState extends AbstractState {
 					e.printStackTrace();
 				}
 				if (monsterHp <= 0) {
+					delayYouWin = 0;
 					playerExp += monsterExp;
+
+					try {
+						loadPlayer.getProp().setProperty("exp", Integer.toString(playerExp));
+						loadPlayer.getProp().store(new FileOutputStream("saves/save.properties"), null);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 
 					// Kill BossMap Complete
 					if (monster == "JungleBoss") {
@@ -223,17 +235,6 @@ public class BattleState extends AbstractState {
 					}
 					// Save Amount Monster Kill in Quest (END)
 
-					// Come Back In Present Map
-					if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
-						aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
-					} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
-						aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
-					} else if (loadPlayer.getProp().getProperty("mapName").equals("CaveState")) {
-						aw.setScreen(new CaveState(aw, positionPlayerX, positionPlayerY));
-					} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
-						aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
-					}
-					// Come Back In Present Map (END)
 				}
 				youTurn = false;
 				monTurn = true;
@@ -245,6 +246,7 @@ public class BattleState extends AbstractState {
 		runBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				sound.stop();
 				if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
 					aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
 				} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
@@ -301,6 +303,7 @@ public class BattleState extends AbstractState {
 		stage.addActor(playerLevelLabel);
 		stage.addActor(playerExpLabel);
 		stage.addActor(playerTurnLabel);
+		stage.addActor(playerWinLabel);
 	}
 
 	@Override
@@ -343,6 +346,31 @@ public class BattleState extends AbstractState {
 
 		// Delay Time Label and Delay Time to Attack
 		delayTimeAttack += delta;
+		delayYouWin += delta;
+
+		if ((delayYouWin >= 0 && delayYouWin < 6) && monsterHp <= 0) {
+			playerWinLabel.setText("Your Win.");
+			playerWinLabel.setVisible(true);
+			mapCheck = true;
+		} else {
+			playerWinLabel.setVisible(false);
+		}
+		
+		if(mapCheck && delayYouWin > 1) {
+			// Come Back In Present Map
+			if (loadPlayer.getProp().getProperty("mapName").equals("JungleState")) {
+				aw.setScreen(new JungleState(aw, positionPlayerX, positionPlayerY));
+			} else if (loadPlayer.getProp().getProperty("mapName").equals("JungleToCaveState")) {
+				aw.setScreen(new JungleToCaveState(aw, positionPlayerX, positionPlayerY));
+			} else if (loadPlayer.getProp().getProperty("mapName").equals("CaveState")) {
+				aw.setScreen(new CaveState(aw, positionPlayerX, positionPlayerY));
+			} else if (loadPlayer.getProp().getProperty("mapName").equals("BossMapState")) {
+				aw.setScreen(new BossMapState(aw, positionPlayerX, positionPlayerY));
+			}
+			// Come Back In Present Map (END)
+		}
+
+		System.out.println("DELAY YOU WIN : " + delayYouWin);
 
 		if (delayTime > 3) {
 			playerTurnLabel.setText("");

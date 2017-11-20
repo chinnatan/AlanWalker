@@ -1,6 +1,5 @@
 package com.alanwalker.util;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,7 +15,7 @@ public class LoadSave {
 	private String attack = Integer.toString((int) (Math.random() * 10));
 	private String playerHP = "100";
 	private String startX = "10.5";
-	private String startY = "0"; 
+	private String startY = "1"; 
 	private String exp = "0";
 	private String mapName = "VillageState";
 	
@@ -48,9 +47,9 @@ public class LoadSave {
 				prop.setProperty("startY", startY);
 				prop.setProperty("mapName", mapName);
 				prop.setProperty("Quest1", "null");
-				prop.setProperty("Quest1CountMonster", "null");
+				prop.setProperty("Quest1CountMonster", "0");
 				prop.setProperty("Quest2", "null");
-				prop.setProperty("Quest2CountMonster", "null");
+				prop.setProperty("Quest2CountMonster", "0");
 				prop.setProperty("Boss", "null");
 				// save properties to project root folder
 				prop.store(outputSave, null);
