@@ -220,7 +220,8 @@ public class BattleState extends AbstractState {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					} else if (!(loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5"))
+					}
+					if (!(loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5"))
 							&& loadPlayer.getProp().getProperty("Quest2").equals("start")) {
 						countMonster++;
 						try {
@@ -236,6 +237,7 @@ public class BattleState extends AbstractState {
 					// Save Amount Monster Kill in Quest (END)
 
 				}
+				sound.stop();
 				youTurn = false;
 				monTurn = true;
 			}
@@ -349,7 +351,7 @@ public class BattleState extends AbstractState {
 		delayYouWin += delta;
 
 		if ((delayYouWin >= 0 && delayYouWin < 6) && monsterHp <= 0) {
-			playerWinLabel.setText("Your Win.");
+			playerWinLabel.setText("You Win.");
 			playerWinLabel.setVisible(true);
 			mapCheck = true;
 		} else {
@@ -370,8 +372,6 @@ public class BattleState extends AbstractState {
 			}
 			// Come Back In Present Map (END)
 		}
-
-		System.out.println("DELAY YOU WIN : " + delayYouWin);
 
 		if (delayTime > 3) {
 			playerTurnLabel.setText("");

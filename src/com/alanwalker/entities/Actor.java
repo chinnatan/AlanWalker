@@ -98,10 +98,6 @@ public class Actor {
 	}
 
 	public boolean move(DIRECTION dir) {
-		// Show X, Y
-		System.out.println("X : " + getX());
-		System.out.println("Y : " + getY());
-		
 		try {
 			loadPlayer.getProp().setProperty("startX", String.valueOf(x));
 			loadPlayer.getProp().setProperty("startY", String.valueOf(y));

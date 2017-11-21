@@ -341,6 +341,7 @@ public class JungleState extends AbstractState {
 		// Check Quest
 		if (loadPlayer.getProp().getProperty("Quest1").equals("start")) {
 			if (loadPlayer.getProp().getProperty("Quest1CountMonster").equals("5")) {
+				sound.stop();
 				npcQuestLabel.setText("คุณต้องการส่งเควสและสู้กับบอสแมพใช่หรือไม่");
 				npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
 				npcQuestLabel.setColor(Color.WHITE);
@@ -388,17 +389,15 @@ public class JungleState extends AbstractState {
 		}
 
 		// Detection Monster in map
-		if (loadPlayer.getProp().getProperty("Quest1CountMonster") != null) {
-			if (actor.overlaps(monsterSpawn)) {
-				if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
-					sound.stop();
-					screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
-					aw.setScreen(screen);
-				} else if ((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
-					sound.stop();
-					screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
-					aw.setScreen(screen);
-				}
+		if (actor.overlaps(monsterSpawn)) {
+			if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+				sound.stop();
+				screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
+				aw.setScreen(screen);
+			} else if ((int) positionMonster2X == player.getX() && (int) positionMonster2Y == player.getY()) {
+				sound.stop();
+				screen = new BattleState(aw, "JungleState", player.getX(), player.getY());
+				aw.setScreen(screen);
 			}
 		}
 

@@ -346,11 +346,6 @@ public class CaveState extends AbstractState {
 		} else if (camera.position.x < Settings.V_WIDTH / 2) {
 			camera.position.x = Settings.V_WIDTH / 2;
 		}
-		// if (camera.position.y > Settings.V_HEIGHT) {
-		// camera.position.y = Settings.V_HEIGHT;
-		// } else if (camera.position.y < Settings.V_HEIGHT / 4) {
-		// camera.position.y = Settings.V_HEIGHT / 4;
-		// }
 
 		camera.update();
 
@@ -369,6 +364,7 @@ public class CaveState extends AbstractState {
 		if (loadPlayer.getProp().getProperty("Quest1").equals("end")) {
 			if (loadPlayer.getProp().getProperty("Quest2").equals("start")) {
 				if (loadPlayer.getProp().getProperty("Quest2CountMonster").equals("5")) {
+					sound.stop();
 					npcQuestLabel.setText("คุณต้องการส่งเควสและสู้กับบอสแมพใช่หรือไม่");
 					npcQuestLabel.setBounds(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5, 10, 10);
 					npcQuestLabel.setColor(Color.WHITE);
@@ -428,6 +424,7 @@ public class CaveState extends AbstractState {
 		// Detection Monster in map
 		if (actor.overlaps(monsterSpawn1) || actor.overlaps(monsterSpawn2) || actor.overlaps(monsterSpawn3)) {
 			if ((int) positionMonster1X == player.getX() && (int) positionMonster1Y == player.getY()) {
+				sound.stop();
 				screen = new BattleState(aw, "CaveState", player.getX(), player.getY());
 				aw.setScreen(screen);
 			}
